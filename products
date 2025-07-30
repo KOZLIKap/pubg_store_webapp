@@ -452,7 +452,7 @@ A<!DOCTYPE html>
         const GITHUB_CONFIG = {
             REPO: 'KOZLIKap/pubg_store_webapp', // Замените на свой репозиторий
             TOKEN: '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', // Замените на свой GitHub токен
-            FILENAME: 'index.html' // Имя файла без расширения
+            FILENAME: 'products' // Имя файла без расширения
         };
         
         // Данные магазина (хранятся только в памяти)
