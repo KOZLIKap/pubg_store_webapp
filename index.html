@@ -3,164 +3,94 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Telegram Mini App</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <title>PUBG Store</title>
+    <link href="https://fonts.googleapis.com/css2?family=Oxanium:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        /* Основные стили */
-        body {
-            background-color: #1a1a1a;
-            color: #ffffff;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        :root {
+            --primary: #ff5500;
+            --primary-dark: #e04a00;
+            --dark: #1a1a1a;
+            --light: #f8f8f8;
+            --gray: #333333;
+            --light-gray: #444444;
+        }
+        
+        * {
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
         }
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 16px;
-            background-color: #222;
-            border-bottom: 1px solid #333;
-            position: sticky;
-            top: 0;
-            z-index: 100;
+        
+        body {
+            font-family: 'Oxanium', sans-serif;
+            background-color: var(--dark);
+            color: var(--light);
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(circle at 25% 25%, rgba(255,85,0,0.1) 0%, transparent 50%),
+                radial-gradient(circle at 75% 75%, rgba(255,85,0,0.1) 0%, transparent 50%);
         }
-        .header h1 {
-            margin: 0;
-            font-size: 20px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .admin-btn {
-            background: none;
-            border: none;
-            color: white;
-            font-size: 24px;
-            cursor: pointer;
-            opacity: 0.3;
-            transition: all 0.3s;
-        }
-        .admin-btn:hover {
-            opacity: 1;
-            transform: scale(1.1);
-        }
-        .products-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 16px;
-            padding: 16px;
-        }
-        .product-card {
-            background-color: #2a2a2a;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            transition: transform 0.3s;
-            animation: fadeIn 0.5s ease-out forwards;
-            opacity: 0;
-        }
-        .product-card:hover {
-            transform: translateY(-5px);
-        }
-        .product-image-container {
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
             position: relative;
-            height: 200px;
-            overflow: hidden;
         }
-        .product-image {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.3s;
-            cursor: pointer;
+        
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+            position: relative;
         }
-        .product-image:hover {
-            transform: scale(1.05);
+        
+        .logo {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 1rem;
+            text-shadow: 0 0 10px rgba(255,85,0,0.3);
         }
-        .fullscreen-icon {
-            position: absolute;
-            bottom: 8px;
-            right: 8px;
-            background: rgba(0, 0, 0, 0.5);
-            border: none;
+        
+        .logo span {
+            color: var(--light);
+        }
+        
+        .subtitle {
+            color: var(--light-gray);
+            font-size: 1.2rem;
+        }
+        
+        /* Кнопка настроек в правом верхнем углу */
+        .admin-btn {
+            position: fixed;
+            top: 1.5rem;
+            right: 1.5rem;
+            width: 40px;
+            height: 40px;
+            background: var(--primary);
             color: white;
             border-radius: 50%;
-            width: 32px;
-            height: 32px;
             display: flex;
             align-items: center;
             justify-content: center;
+            font-size: 1.2rem;
             cursor: pointer;
-            font-size: 16px;
-        }
-        .product-info {
-            padding: 16px;
-        }
-        .product-name {
-            font-size: 18px;
-            font-weight: bold;
-            margin-bottom: 8px;
-        }
-        .product-price {
-            color: #ffcc00;
-            font-size: 20px;
-            font-weight: bold;
-            margin-bottom: 8px;
-        }
-        .product-description {
-            color: #aaa;
-            font-size: 14px;
-            margin-bottom: 16px;
-            height: 60px;
-            overflow: hidden;
-            display: -webkit-box;
-            -webkit-line-clamp: 3;
-            -webkit-box-orient: vertical;
-        }
-        .buy-btn {
-            background-color: #4CAF50;
-            color: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            z-index: 100;
+            transition: all 0.3s;
             border: none;
-            border-radius: 8px;
-            padding: 10px 16px;
-            width: 100%;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background-color 0.3s;
         }
-        .buy-btn:hover {
-            background-color: #3d8b40;
+        
+        .admin-btn:hover {
+            background: var(--primary-dark);
+            transform: rotate(90deg);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
         }
-        .admin-panel {
-            display: none;
-            justify-content: center;
-            gap: 12px;
-            padding: 16px;
-            background-color: #222;
-            position: sticky;
-            top: 60px;
-            z-index: 99;
-        }
-        .btn {
-            background-color: #3498db;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            padding: 10px 16px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        .btn:hover {
-            background-color: #2980b9;
-        }
-        .btn-secondary {
-            background-color: #7f8c8d;
-        }
-        .btn-secondary:hover {
-            background-color: #6c7a7b;
-        }
+        
+        /* Модальные окна */
         .modal {
             display: none;
             position: fixed;
@@ -168,1194 +98,762 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.8);
+            background: rgba(0,0,0,0.8);
             z-index: 1000;
-            overflow-y: auto;
+            align-items: center;
+            justify-content: center;
         }
+        
         .modal-content {
-            background-color: #2a2a2a;
-            margin: 5% auto;
-            padding: 24px;
+            background: linear-gradient(145deg, #222222, #2a2a2a);
             border-radius: 12px;
-            max-width: 500px;
+            padding: 2rem;
             width: 90%;
+            max-width: 500px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            border: 1px solid var(--gray);
+            animation: modalFadeIn 0.3s ease-out;
             position: relative;
         }
-        .close {
-            position: absolute;
-            top: 16px;
-            right: 16px;
-            font-size: 28px;
-            cursor: pointer;
+        
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-        input, textarea {
-            width: 100%;
-            padding: 12px;
-            margin-bottom: 16px;
-            border: 1px solid #444;
-            border-radius: 8px;
-            background-color: #333;
-            color: white;
-            font-size: 16px;
-            box-sizing: border-box;
-        }
-        .form-actions {
-            display: flex;
-            gap: 12px;
-            margin-top: 16px;
-        }
-        .image-preview {
-            margin-top: 16px;
+        
+        .modal-title {
             text-align: center;
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            color: var(--primary);
         }
-        .image-preview img {
-            max-width: 100%;
-            max-height: 200px;
-            border-radius: 8px;
-        }
-        .admin-context-menu {
+        
+        .close-btn {
             position: absolute;
-            top: 60px;
-            right: 16px;
-            background-color: #2a2a2a;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-            z-index: 1000;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-        .context-menu-item {
+            top: 1rem;
+            right: 1rem;
             background: none;
             border: none;
-            color: white;
-            padding: 12px 24px;
-            text-align: left;
+            color: #aaa;
+            font-size: 1.5rem;
             cursor: pointer;
+        }
+        
+        /* Формы */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #aaa;
+        }
+        
+        .form-group input, 
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            background-color: #333;
+            border: 1px solid #444;
+            border-radius: 6px;
+            color: white;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+            font-family: 'Oxanium', sans-serif;
+        }
+        
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        
+        .btn {
+            width: 100%;
+            background: linear-gradient(to right, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            padding: 0.8rem;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 0.5rem;
+        }
+        
+        .btn:hover {
+            background: linear-gradient(to right, var(--primary-dark), var(--primary));
+            box-shadow: 0 5px 15px rgba(255,85,0,0.3);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(to right, #f44336, #d32f2f);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(to right, #9e9e9e, #616161);
+        }
+        
+        /* Карточки товаров */
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        
+        .product-card {
+            background: linear-gradient(145deg, #222222, #2a2a2a);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: 1px solid var(--gray);
+            position: relative;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.4);
+            border-color: var(--primary);
+        }
+        
+        .product-image {
+            height: 180px;
+            background-color: var(--gray);
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+        
+        .product-badge {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background-color: var(--primary);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .product-content {
+            padding: 1.5rem;
+        }
+        
+        .product-title {
+            font-size: 1.4rem;
+            margin-bottom: 0.5rem;
+            color: var(--light);
+        }
+        
+        .product-price {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 1rem 0;
+        }
+        
+        .product-description {
+            color: #aaa;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            margin-bottom: 1.5rem;
+        }
+        
+        .buy-btn {
+            display: inline-block;
+            width: 100%;
+            background: linear-gradient(to right, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            padding: 0.8rem;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .buy-btn:hover {
+            background: linear-gradient(to right, var(--primary-dark), var(--primary));
+            box-shadow: 0 5px 15px rgba(255,85,0,0.3);
+        }
+        
+        .admin-controls {
+            position: absolute;
+            top: 0.5rem;
+            left: 0.5rem;
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .admin-control-btn {
+            width: 30px;
+            height: 30px;
+            background: rgba(0,0,0,0.7);
+            border-radius: 50%;
             display: flex;
             align-items: center;
-            gap: 12px;
-            font-size: 14px;
+            justify-content: center;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.2s;
         }
-        .context-menu-item:hover {
-            background-color: #3498db;
+        
+        .admin-control-btn:hover {
+            background: var(--primary);
+            transform: scale(1.1);
         }
+        
         .hidden {
             display: none;
         }
-        .fullscreen-overlay {
-            display: none;
+
+        /* Стили для статуса синхронизации */
+        .sync-status {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.9);
-            z-index: 2000;
-            justify-content: center;
-            align-items: center;
-        }
-        .fullscreen-image {
-            max-width: 90%;
-            max-height: 90%;
-            border-radius: 8px;
-        }
-        .fullscreen-close {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            font-size: 36px;
+            bottom: 1rem;
+            right: 1rem;
+            padding: 0.8rem 1.5rem;
+            border-radius: 6px;
+            background-color: rgba(0,0,0,0.8);
             color: white;
-            background: none;
-            border: none;
-            cursor: pointer;
-        }
-        .toast-container {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            z-index: 3000;
-            max-width: 300px;
-        }
-        .toast {
-            padding: 16px;
-            border-radius: 8px;
-            color: white;
-            opacity: 0;
-            transform: translateY(20px);
-            animation: toastIn 0.3s forwards;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-        }
-        .toast.removing {
-            animation: toastOut 0.3s forwards;
-        }
-        .toast.info {
-            background-color: #3498db;
-        }
-        .toast.success {
-            background-color: #2ecc71;
-        }
-        .toast.error {
-            background-color: #e74c3c;
-        }
-        .toast.warning {
-            background-color: #f39c12;
-        }
-        .empty-state {
-            text-align: center;
-            padding: 40px 20px;
-            color: #888;
-        }
-        .refresh-panel {
-            display: flex;
-            justify-content: center;
-            padding: 16px;
-        }
-        .product-detail-content {
-            max-width: 600px;
-        }
-        .product-detail-header {
-            display: flex;
-            gap: 24px;
-            margin-bottom: 24px;
-        }
-        .product-detail-image {
-            width: 200px;
-            height: 200px;
-            object-fit: cover;
-            border-radius: 12px;
-            cursor: pointer;
-        }
-        .product-detail-info {
-            flex: 1;
-        }
-        .product-detail-name {
-            font-size: 24px;
-            font-weight: bold;
-            margin-bottom: 12px;
-        }
-        .product-detail-price {
-            color: #ffcc00;
-            font-size: 28px;
-            font-weight: bold;
-        }
-        .product-detail-description {
-            font-size: 16px;
-            line-height: 1.6;
-            margin-bottom: 24px;
-            color: #ddd;
-        }
-        .product-detail-actions {
-            display: flex;
-            gap: 12px;
-        }
-        .product-detail-buy-btn {
-            flex: 1;
-        }
-        .header-loading {
-            display: inline-block;
-            width: 24px;
-            height: 24px;
-            border: 3px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            border-top-color: #fff;
-            animation: spin 1s ease-in-out infinite;
+            font-size: 0.9rem;
+            z-index: 1000;
             opacity: 0;
             transition: opacity 0.3s;
-            margin-left: 10px;
+            border-left: 4px solid var(--primary);
         }
-        .header-loading.visible {
+
+        .sync-status.show {
             opacity: 1;
         }
-        .skeleton-card {
-            background-color: #2a2a2a;
-            border-radius: 12px;
-            overflow: hidden;
-            animation: pulse 1.5s infinite;
-            opacity: 0;
-            animation: fadeIn 0.5s ease-out forwards;
+
+        .sync-success {
+            border-left-color: #4caf50;
         }
-        .skeleton-image {
-            height: 200px;
-            background-color: #333;
-        }
-        .skeleton-content {
-            padding: 16px;
-        }
-        .skeleton-title, .skeleton-price, .skeleton-description, .skeleton-button {
-            background-color: #333;
-            height: 20px;
-            margin-bottom: 12px;
-            border-radius: 4px;
-        }
-        .skeleton-title {
-            width: 70%;
-        }
-        .skeleton-price {
-            width: 40%;
-        }
-        .skeleton-description {
-            width: 100%;
-        }
-        .skeleton-button {
-            height: 40px;
-        }
-        .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            border-top-color: #fff;
-            animation: spin 1s ease-in-out infinite;
-            vertical-align: middle;
-            margin-right: 8px;
-        }
-        /* Анимации */
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        @keyframes fadeIn {
-            to { opacity: 1; }
-        }
-        @keyframes pulse {
-            0%, 100% { opacity: 0.6; }
-            50% { opacity: 0.3; }
-        }
-        @keyframes toastIn {
-            to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes toastOut {
-            to { opacity: 0; transform: translateY(20px); }
-        }
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            20%, 60% { transform: translateX(-5px); }
-            40%, 80% { transform: translateX(5px); }
+
+        .sync-error {
+            border-left-color: #f44336;
         }
     </style>
 </head>
 <body>
-    <div id="app">
-        <header class="header">
-            <h1>
-                🎮 PUBG Store
-                <div id="header-loading" class="header-loading"></div>
-            </h1>
-            <button id="admin-btn" class="admin-btn" title="Админ панель" onclick="handleAdminClick()">⚙️</button>
+    <!-- Кнопка администрирования -->
+    <button class="admin-btn" id="adminButton" title="Панель администратора">⚙️</button>
+    
+    <!-- Статус синхронизации -->
+    <div class="sync-status" id="syncStatus"></div>
+    
+    <!-- Модальное окно администратора -->
+    <div class="modal" id="adminModal">
+        <div class="modal-content">
+            <button class="close-btn" id="closeAdmin">&times;</button>
+            <h2 class="modal-title">Панель администратора</h2>
+            
+            <!-- Форма входа -->
+            <div id="loginFormContainer">
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="adminPassword">Введите пароль администратора</label>
+                        <input type="password" id="adminPassword" placeholder="••••••••" required>
+                    </div>
+                    <button type="submit" class="btn">Войти</button>
+                </form>
+            </div>
+            
+            <!-- Контент администратора -->
+            <div id="adminPanelContent" class="hidden">
+                <h3 style="color: var(--primary); margin-bottom: 1rem;">Действия:</h3>
+                <button id="addProductBtn" class="btn">Добавить товар</button>
+                <button id="statsBtn" class="btn btn-secondary" style="margin-top: 0.5rem;">Статистика продаж</button>
+                <button id="syncBtn" class="btn" style="margin-top: 0.5rem;">Синхронизировать с GitHub</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Модальное окно добавления товара -->
+    <div class="modal" id="addProductModal">
+        <div class="modal-content">
+            <button class="close-btn" id="closeAddProduct">&times;</button>
+            <h2 class="modal-title">Добавить товар</h2>
+            <form id="addProductForm">
+                <div class="form-group">
+                    <label for="productTitle">Название товара</label>
+                    <input type="text" id="productTitle" placeholder="Аккаунт #3" required>
+                </div>
+                <div class="form-group">
+                    <label for="productPrice">Цена (₽)</label>
+                    <input type="number" id="productPrice" placeholder="100" required>
+                </div>
+                <div class="form-group">
+                    <label for="productBadge">Бейдж</label>
+                    <select id="productBadge">
+                        <option value="Популярный">Популярный</option>
+                        <option value="Новый">Новый</option>
+                        <option value="Эксклюзив">Эксклюзив</option>
+                        <option value="">Без бейджа</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="productDescription">Описание</label>
+                    <textarea id="productDescription" placeholder="Описание товара..." required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="productImage">Изображение (URL)</label>
+                    <input type="text" id="productImage" placeholder="https://example.com/image.jpg">
+                </div>
+                <button type="submit" class="btn">Добавить товар</button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Модальное окно статистики -->
+    <div class="modal" id="statsModal">
+        <div class="modal-content">
+            <button class="close-btn" id="closeStats">&times;</button>
+            <h2 class="modal-title">Статистика</h2>
+            <div id="statsContent">
+                <p>Всего товаров: <span id="totalProducts">0</span></p>
+                <p>Средняя цена: <span id="avgPrice">0</span> ₽</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Основной контент магазина -->
+    <div class="container">
+        <header>
+            <div class="logo">PUBG <span>STORE</span></div>
+            <div class="subtitle">Официальный магазин игровых аккаунтов PUBG</div>
         </header>
         
-        <main class="main">
-            <div id="products-container" class="products-container">
-                <div class="empty-state">
-                    <h2>Магазин пуст</h2>
-                    <p>Товары появятся здесь после добавления администратором</p>
-                </div>
-            </div>
-        </main>
-        <!-- Модальное окно авторизации админа -->
-        <div id="admin-auth-modal" class="modal">
-            <div class="modal-content">
-                <span class="close">×</span>
-                <h2>Авторизация администратора</h2>
-                <input type="password" id="admin-password" placeholder="Введите пароль">
-                <button id="auth-submit" class="btn">Войти</button>
-            </div>
-        </div>
-        <!-- Модальное окно добавления товара -->
-        <div id="add-product-modal" class="modal">
-            <div class="modal-content">
-                <span class="close">×</span>
-                <h2>Добавить товар</h2>
-                <form id="product-form">
-                    <input type="text" id="product-name" placeholder="Название товара" required>
-                    <input type="number" id="product-price" placeholder="Цена" step="0.01" required>
-                    <textarea id="product-description" placeholder="Описание товара" rows="3"></textarea>
-                    <input type="url" id="product-buy-link" placeholder="Ссылка для покупки (https://t.me/KOZLIK_pubg_shop_bot?start=c_123456)">
-                    <input type="file" id="product-image" accept="image/*">
-                    <div class="image-preview" id="image-preview"></div>
-                    <div class="form-actions">
-                        <button type="submit" class="btn">Добавить товар</button>
-                        <button type="button" class="btn btn-secondary" id="cancel-add">Отмена</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-        <!-- Модальное окно смены пароля -->
-        <div id="change-password-modal" class="modal">
-            <div class="modal-content">
-                <span class="close">×</span>
-                <h2>🔐 Смена пароля</h2>
-                <div style="margin-bottom: 16px; font-size: 12px; color: #888;">
-                    💡 Пароль будет изменен глобально для всех пользователей
-                </div>
-                <form id="change-password-form">
-                    <input type="password" id="current-password" placeholder="Текущий пароль" required>
-                    <input type="password" id="new-password" placeholder="Новый пароль" required>
-                    <input type="password" id="confirm-password" placeholder="Подтвердите новый пароль" required>
-                    <div class="form-actions">
-                        <button type="submit" class="btn">🔄 Изменить пароль</button>
-                        <button type="button" class="btn btn-secondary" id="cancel-password">Отмена</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-        <!-- Админ панель -->
-        <div id="admin-panel" class="admin-panel">
-            <button id="add-product-btn" class="btn">+ Добавить товар</button>
-            <button id="logout-btn" class="btn btn-secondary">Выйти</button>
-        </div>
-        
-        <!-- Кнопка обновления для всех пользователей -->
-        <div id="refresh-panel" class="refresh-panel">
-            <button id="refresh-products-btn" class="btn btn-secondary">🔄 Обновить</button>
-        </div>
-        <!-- Контекстное меню админа -->
-        <div id="admin-context-menu" class="admin-context-menu hidden">
-            <button id="change-password-btn" class="context-menu-item">
-                <span>🔐</span> Сменить пароль
-            </button>
-        </div>
-        <!-- Модальное окно детального просмотра товара -->
-        <div id="product-detail-modal" class="modal">
-            <div class="modal-content product-detail-content">
-                <span class="close">×</span>
-                <div id="product-detail-body">
-                    <!-- Содержимое будет добавлено динамически -->
-                </div>
-            </div>
+        <div class="products-grid" id="productsContainer">
+            <!-- Товары будут добавляться сюда динамически -->
         </div>
     </div>
-    
-    <!-- Toast Container -->
-    <div id="toast-container" class="toast-container"></div>
-    
-    <!-- Fullscreen Image Overlay -->
-    <div id="fullscreen-overlay" class="fullscreen-overlay">
-        <img id="fullscreen-image" class="fullscreen-image" src="" alt="">
-        <button id="fullscreen-close" class="fullscreen-close">✕</button>
-    </div>
-    
+
     <script>
-// Инициализация Telegram Web App
-const tg = window.Telegram.WebApp;
-// Настройка приложения
-tg.ready();
-tg.expand();
-// Константы
-let ADMIN_PASSWORD = localStorage.getItem('admin_password') || 'admin';
-// Состояние приложения
-let isAdmin = false;
-let products = [];
-// Элементы DOM (будут инициализированы после загрузки DOM)
-let productsContainer, adminBtn, adminAuthModal, addProductModal, adminPanel;
-let adminPassword, authSubmit, addProductBtn, logoutBtn, productForm;
-let imagePreview, productImage;
-
-// Функция для показа уведомлений
-function showToast(message, type = 'info', duration = 2000) {
-    const toastContainer = document.getElementById('toast-container');
-    const toast = document.createElement('div');
-    toast.className = `toast ${type}`;
-    toast.textContent = message;
-    
-    // Добавляем в начало контейнера (снизу)
-    toastContainer.insertBefore(toast, toastContainer.firstChild);
-    
-    // Ограничиваем количество toast до 3
-    const toasts = toastContainer.querySelectorAll('.toast');
-    if (toasts.length > 3) {
-        const oldestToast = toasts[toasts.length - 1];
-        oldestToast.classList.add('removing');
-        setTimeout(() => {
-            if (oldestToast.parentNode) {
-                oldestToast.parentNode.removeChild(oldestToast);
-            }
-        }, 300);
-    }
-    
-    // Автоматическое удаление через заданное время
-    setTimeout(() => {
-        if (toast.parentNode) {
-            toast.classList.add('removing');
-            setTimeout(() => {
-                if (toast.parentNode) {
-                    toast.parentNode.removeChild(toast);
-                }
-            }, 300);
-        }
-    }, duration);
-    
-    // Удаление по клику
-    toast.addEventListener('click', () => {
-        if (toast.parentNode) {
-            toast.classList.add('removing');
-            setTimeout(() => {
-                if (toast.parentNode) {
-                    toast.parentNode.removeChild(toast);
-                }
-            }, 300);
-        }
-    });
-}
-
-// Глобальная функция для обработки клика админа
-window.handleAdminClick = function() {
-    const adminAuthModal = document.getElementById('admin-auth-modal');
-    const adminContextMenu = document.getElementById('admin-context-menu');
-    
-    if (isAdmin) {
-        // Если админ уже авторизован, показываем контекстное меню
-        if (adminContextMenu) {
-            adminContextMenu.classList.toggle('hidden');
-        }
-    } else {
-        if (adminAuthModal) {
-            adminAuthModal.style.display = 'block';
-        }
-    }
-}
-
-// Загрузка товаров через Telegram Bot API
-async function loadProducts() {
-    console.log('🔄 Начинаем загрузку товаров через Telegram API...');
-    
-    // Показываем индикаторы загрузки
-    showLoadingIndicators();
-    showLoadingMessage('Загружаем товары...');
-    
-    try {
-        // Отправляем запрос боту на получение данных
-        const requestData = {
-            action: 'get_products'
+        // Конфигурация синхронизации с GitHub
+        const GITHUB_CONFIG = {
+            REPO: 'KOZLIKap/pubg_store_webapp', // Замените на свой репозиторий
+            TOKEN: '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', // Замените на свой GitHub токен
+            FILENAME: 'index.html' // Имя файла без расширения
         };
         
-        tg.sendData(JSON.stringify(requestData));
-        showToast('📡 Запрос отправлен боту...', 'info');
-        
-        // Ожидаем ответа через web_app_data событие
-        // Обработчик установлен в конце кода
-        
-    } catch (error) {
-        products = [];
-        console.log('❌ Ошибка сети:', error);
-        showToast('❌ Ошибка сети при загрузке товаров', 'error');
-        hideLoadingIndicators();
-    }
-}
-
-// Обработчик данных от бота
-function handleBotData(event) {
-    try {
-        const data = JSON.parse(event.data);
-        console.log('📬 Данные от бота:', data);
-        
-        if (data.type === 'products') {
-            // Обработка полученных товаров
-            products = data.products || [];
-            
-            // Обновляем глобальный пароль админа
-            if (data.adminPassword) {
-                ADMIN_PASSWORD = data.adminPassword;
-                localStorage.setItem('admin_password', ADMIN_PASSWORD);
-                console.log('🔐 Глобальный пароль админа загружен');
-            }
-            
-            console.log('✅ Товары загружены:', products.length, 'шт.');
-            renderProducts();
-            hideLoadingIndicators();
-            showToast('✅ Данные успешно загружены', 'success');
-            
-        } else if (data.type === 'save_result') {
-            // Обработка результата сохранения
-            if (data.success) {
-                showToast('✅ Данные успешно сохранены', 'success');
-            } else {
-                showToast(`❌ Ошибка сохранения: ${data.message || 'Неизвестная ошибка'}`, 'error');
-            }
-        }
-    } catch (error) {
-        console.error('Ошибка обработки данных от бота:', error);
-        showToast('❌ Ошибка обработки данных от бота', 'error');
-        hideLoadingIndicators();
-    }
-}
-
-// Сохранение товаров через Telegram Bot API
-async function saveProducts() {
-    if (!isAdmin) {
-        return;
-    }
-    
-    try {
-        const content = {
-            products: products,
-            adminPassword: ADMIN_PASSWORD, // Сохраняем пароль админа глобально
-            lastUpdated: new Date().toISOString()
-        };
-        
-        // Отправляем данные боту
-        const requestData = {
-            action: 'save_products',
-            data: content
-        };
-        
-        tg.sendData(JSON.stringify(requestData));
-        showToast('🔄 Сохраняем данные через бота...', 'info');
-        
-    } catch (error) {
-        showToast('❌ Ошибка сохранения', 'error');
-    }
-}
-
-// Отображение товаров
-function renderProducts() {
-    console.log('🎨 Рендерим товары, количество:', products.length);
-    
-    if (products.length === 0) {
-        // Показываем пустое состояние только если не идет загрузка
-        const headerLoading = document.getElementById('header-loading');
-        const isLoading = headerLoading && headerLoading.classList.contains('visible');
-        
-        if (!isLoading) {
-            console.log('📦 Товаров нет, показываем пустое состояние');
-            productsContainer.innerHTML = `
-                <div class="empty-state">
-                    <h2>🛍️ Магазин пуст</h2>
-                    <p>Товары появятся здесь после добавления администратором</p>
-                </div>
-            `;
-        }
-        return;
-    }
-    
-    // Очищаем контейнер
-    console.log('🧹 Очищаем контейнер товаров');
-    if (!productsContainer) {
-        console.error('❌ productsContainer не найден!');
-        return;
-    }
-    productsContainer.innerHTML = '';
-    
-    // Добавляем товары с анимацией
-    console.log('🎨 Начинаем рендерить товары...');
-    products.forEach((product, index) => {
-        const productCard = document.createElement('div');
-        productCard.className = 'product-card';
-        productCard.style.animationDelay = `${index * 0.1}s`;
-        
-        const imageHtml = product.image ? 
-            `<div class="product-image-container">
-                <img src="${product.image}" alt="${product.name}" class="product-image" onclick="event.stopPropagation(); openFullscreen('${product.image}', '${product.name}')">
-                <button class="fullscreen-icon" onclick="event.stopPropagation(); openFullscreen('${product.image}', '${product.name}')" title="Открыть в полном размере">🔍</button>
-            </div>` : 
-            '<div class="product-image"></div>';
-        
-        productCard.innerHTML = `
-            ${imageHtml}
-            <div class="product-info">
-                <div class="product-name">${product.name}</div>
-                <div class="product-price">${product.price} ₽</div>
-                <div class="product-description">${product.description}</div>
-                <button class="buy-btn" onclick="event.stopPropagation(); buyProduct(${product.id})">
-                    <span>🛒 Купить</span>
-                </button>
-                ${isAdmin ? `<button class="btn btn-secondary" style="margin-top: 8px; width: 100%; padding: 6px; font-size: 11px;" onclick="event.stopPropagation(); deleteProduct(${product.id})">🗑️ Удалить</button>` : ''}
-            </div>
-        `;
-        
-        // Добавляем обработчик клика на карточку (но не на кнопки и изображение)
-        productCard.addEventListener('click', (e) => {
-            // Проверяем, что клик не по кнопке, изображению или иконке полноэкранного режима
-            if (!e.target.closest('.buy-btn') && 
-                !e.target.closest('.btn-secondary') && 
-                !e.target.closest('.product-image') && 
-                !e.target.closest('.fullscreen-icon')) {
-                showProductDetail(product.id);
-            }
-        });
-        
-        productsContainer.appendChild(productCard);
-    });
-    
-    console.log('🎯 Рендеринг завершен, товаров в DOM:', productsContainer.children.length);
-}
-
-// Покупка товара
-function buyProduct(productId) {
-    const product = products.find(p => p.id === productId);
-    if (!product) return;
-    
-    // Используем ссылку из товара, если она есть
-    let botLink;
-    if (product.buyLink && product.buyLink.trim()) {
-        botLink = product.buyLink.trim();
-    } else {
-        // Fallback: формируем параметр для бота с информацией о товаре
-        const botParameter = `buy_${product.id}_${encodeURIComponent(product.name)}_${product.price}`;
-        botLink = `https://t.me/KOZLIK_pubg_shop_bot?start=${botParameter}`;
-    }
-    
-    try {
-        // Пытаемся открыть бота через Telegram API
-        tg.openTelegramLink(botLink);
-        showToast(`🛒 Переход к покупке "${product.name}"...`, 'info', 1500);
-    } catch (error) {
-        console.log('Ошибка открытия ссылки:', error);
-        // Fallback: отправляем данные обычным способом и закрываем приложение
-        const purchaseData = {
-            action: 'buy_product',
-            product: {
-                id: product.id,
-                name: product.name,
-                price: product.price,
-                description: product.description,
-                buyLink: product.buyLink
+        // Данные магазина (хранятся только в памяти)
+        let products = [
+            {
+                id: 1,
+                title: "Аккаунт #1",
+                price: 300,
+                description: "Купленые RP: A11, A12, A13<br>Особенные скины и предметы<br>Уровень: 50+",
+                badge: "Популярный",
+                image: "https://via.placeholder.com/300x180/333333/666666?text=PUBG+Account+1"
             },
-            user_id: tg.initDataUnsafe?.user?.id,
-            timestamp: Date.now()
-        };
-        
-        tg.sendData(JSON.stringify(purchaseData));
-        showToast(`🛒 Данные отправлены боту`, 'success', 1000);
-        
-        // Закрываем Mini App через секунду
-        setTimeout(() => {
-            tg.close();
-        }, 1000);
-    }
-}
-
-// Удаление товара (только для админа)
-async function deleteProduct(productId) {
-    if (!isAdmin) return;
-    
-    const product = products.find(p => p.id === productId);
-    const productName = product ? product.name : 'товар';
-    
-    products = products.filter(p => p.id !== productId);
-    renderProducts(); // Сразу обновляем отображение
-    await saveProducts();
-    showToast(`🗑️ "${productName}" удален`, 'info');
-}
-
-// Модальные окна
-function openModal(modal) {
-    modal.style.display = 'block';
-}
-
-function closeModal(modal) {
-    modal.style.display = 'none';
-}
-
-// Полноэкранный просмотр изображений
-window.openFullscreen = function(imageSrc, altText) {
-    const overlay = document.getElementById('fullscreen-overlay');
-    const image = document.getElementById('fullscreen-image');
-    
-    image.src = imageSrc;
-    image.alt = altText;
-    overlay.style.display = 'flex';
-    
-    // Блокируем скролл страницы
-    document.body.style.overflow = 'hidden';
-}
-
-window.closeFullscreen = function() {
-    const overlay = document.getElementById('fullscreen-overlay');
-    overlay.style.display = 'none';
-    
-    // Восстанавливаем скролл страницы
-    document.body.style.overflow = 'auto';
-}
-
-// Функция сжатия изображений
-function compressImage(file, maxWidth = 800, maxHeight = 600, quality = 0.8) {
-    return new Promise((resolve, reject) => {
-        // Проверяем, что это изображение
-        if (!file.type.startsWith('image/')) {
-            reject(new Error('Файл не является изображением'));
-            return;
-        }
-        
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-        const img = new Image();
-        
-        img.onload = () => {
-            try {
-                // Вычисляем новые размеры с сохранением пропорций
-                let { width, height } = img;
-                
-                // Определяем коэффициент масштабирования
-                const scaleX = maxWidth / width;
-                const scaleY = maxHeight / height;
-                const scale = Math.min(scaleX, scaleY, 1); // Не увеличиваем изображение
-                
-                const newWidth = Math.round(width * scale);
-                const newHeight = Math.round(height * scale);
-                
-                canvas.width = newWidth;
-                canvas.height = newHeight;
-                
-                // Улучшаем качество рендеринга
-                ctx.imageSmoothingEnabled = true;
-                ctx.imageSmoothingQuality = 'high';
-                
-                // Рисуем сжатое изображение
-                ctx.drawImage(img, 0, 0, newWidth, newHeight);
-                
-                // Определяем формат вывода
-                let outputFormat = 'image/jpeg';
-                let outputQuality = quality;
-                
-                // Для PNG с прозрачностью сохраняем PNG
-                if (file.type === 'image/png') {
-                    // Проверяем наличие прозрачности
-                    const imageData = ctx.getImageData(0, 0, newWidth, newHeight);
-                    const hasTransparency = imageData.data.some((_, i) => i % 4 === 3 && imageData.data[i] < 255);
-                    
-                    if (hasTransparency) {
-                        outputFormat = 'image/png';
-                        outputQuality = undefined; // PNG не использует quality
-                    }
-                }
-                
-                // Конвертируем в base64
-                const compressedDataUrl = canvas.toDataURL(outputFormat, outputQuality);
-                
-                // Проверяем размер результата
-                const originalSize = file.size;
-                const compressedSize = Math.round((compressedDataUrl.length * 3) / 4); // Приблизительный размер base64
-                
-                console.log(`📸 Сжатие изображения: ${Math.round(originalSize/1024)}KB → ${Math.round(compressedSize/1024)}KB (${Math.round((1-compressedSize/originalSize)*100)}% экономии)`);
-                
-                resolve({
-                    dataUrl: compressedDataUrl,
-                    originalSize,
-                    compressedSize,
-                    width: newWidth,
-                    height: newHeight,
-                    format: outputFormat
-                });
-                
-            } catch (error) {
-                reject(error);
+            {
+                id: 2,
+                title: "Аккаунт #2",
+                price: 80,
+                description: "В продаже!<br>Рандом аккаунт █ Олд аккаунт<br>Базовые предметы",
+                badge: "Новый",
+                image: "https://via.placeholder.com/300x180/333333/666666?text=PUBG+Account+2"
             }
-        };
+        ];
         
-        img.onerror = () => {
-            reject(new Error('Ошибка загрузки изображения'));
-        };
+        let isAdmin = false;
         
-        // Загружаем изображение
-        img.src = URL.createObjectURL(file);
-    });
-}
-
-// Функции индикаторов загрузки
-function showLoadingIndicators() {
-    // Показываем спиннер в header
-    const headerLoading = document.getElementById('header-loading');
-    if (headerLoading) {
-        headerLoading.classList.add('visible');
-    }
-    
-    // Показываем скелетон-карточки
-    showSkeletonCards();
-}
-
-function hideLoadingIndicators() {
-    // Скрываем спиннер в header
-    const headerLoading = document.getElementById('header-loading');
-    if (headerLoading) {
-        headerLoading.classList.remove('visible');
-    }
-}
-
-function showSkeletonCards(count = 6) {
-    if (!productsContainer) return;
-    
-    productsContainer.className = 'loading-state';
-    productsContainer.innerHTML = '';
-    
-    for (let i = 0; i < count; i++) {
-        const skeletonCard = document.createElement('div');
-        skeletonCard.className = 'skeleton-card';
-        skeletonCard.style.animationDelay = `${i * 0.1}s`;
+        // DOM элементы
+        const adminButton = document.getElementById('adminButton');
+        const adminModal = document.getElementById('adminModal');
+        const closeAdmin = document.getElementById('closeAdmin');
+        const loginForm = document.getElementById('loginForm');
+        const loginFormContainer = document.getElementById('loginFormContainer');
+        const adminPanelContent = document.getElementById('adminPanelContent');
+        const addProductBtn = document.getElementById('addProductBtn');
+        const addProductModal = document.getElementById('addProductModal');
+        const closeAddProduct = document.getElementById('closeAddProduct');
+        const addProductForm = document.getElementById('addProductForm');
+        const statsBtn = document.getElementById('statsBtn');
+        const statsModal = document.getElementById('statsModal');
+        const closeStats = document.getElementById('closeStats');
+        const productsContainer = document.getElementById('productsContainer');
+        const totalProductsSpan = document.getElementById('totalProducts');
+        const avgPriceSpan = document.getElementById('avgPrice');
+        const syncBtn = document.getElementById('syncBtn');
+        const syncStatus = document.getElementById('syncStatus');
         
-        skeletonCard.innerHTML = `
-            <div class="skeleton-image"></div>
-            <div class="skeleton-content">
-                <div class="skeleton-title"></div>
-                <div class="skeleton-price"></div>
-                <div class="skeleton-description"></div>
-                <div class="skeleton-description"></div>
-                <div class="skeleton-button"></div>
-            </div>
-        `;
+        // Пароль администратора
+        const ADMIN_PASSWORD = "admin123";
         
-        productsContainer.appendChild(skeletonCard);
-    }
-}
-
-function showLoadingMessage(message) {
-    const headerLoading = document.getElementById('header-loading');
-    if (headerLoading) {
-        headerLoading.title = message;
-    }
-}
-
-// Детальный просмотр товара
-function showProductDetail(productId) {
-    const product = products.find(p => p.id === productId);
-    if (!product) return;
-    
-    const modal = document.getElementById('product-detail-modal');
-    const body = document.getElementById('product-detail-body');
-    
-    const imageHtml = product.image ? 
-        `<img src="${product.image}" alt="${product.name}" class="product-detail-image" onclick="openFullscreen('${product.image}', '${product.name}')">` : 
-        '<div class="product-detail-image"></div>';
-    
-    body.innerHTML = `
-        <div class="product-detail-header">
-            ${imageHtml}
-            <div class="product-detail-info">
-                <div class="product-detail-name">${product.name}</div>
-                <div class="product-detail-price">${product.price} ₽</div>
-            </div>
-        </div>
-        <div class="product-detail-description">${product.description}</div>
-        <div class="product-detail-actions">
-            <button class="btn product-detail-buy-btn" onclick="buyProduct(${product.id}); closeProductDetail()">
-                <span>🛒 Купить</span>
-            </button>
-            ${isAdmin ? `<button class="btn btn-secondary" onclick="deleteProduct(${product.id}); closeProductDetail()">🗑️ Удалить</button>` : ''}
-        </div>
-    `;
-    
-    modal.style.display = 'block';
-    document.body.style.overflow = 'hidden';
-}
-
-function closeProductDetail() {
-    const modal = document.getElementById('product-detail-modal');
-    modal.style.display = 'none';
-    document.body.style.overflow = 'auto';
-}
-
-// Инициализация приложения
-document.addEventListener('DOMContentLoaded', () => {
-    // Инициализация DOM элементов
-    productsContainer = document.getElementById('products-container');
-    console.log('🎯 productsContainer найден:', !!productsContainer);
-    adminBtn = document.getElementById('admin-btn');
-    adminAuthModal = document.getElementById('admin-auth-modal');
-    addProductModal = document.getElementById('add-product-modal');
-    adminPanel = document.getElementById('admin-panel');
-    adminPassword = document.getElementById('admin-password');
-    authSubmit = document.getElementById('auth-submit');
-    addProductBtn = document.getElementById('add-product-btn');
-    logoutBtn = document.getElementById('logout-btn');
-    productForm = document.getElementById('product-form');
-    imagePreview = document.getElementById('image-preview');
-    productImage = document.getElementById('product-image');
-    
-    // Элементы для смены пароля
-    const changePasswordModal = document.getElementById('change-password-modal');
-    const changePasswordForm = document.getElementById('change-password-form');
-    const currentPasswordInput = document.getElementById('current-password');
-    const newPasswordInput = document.getElementById('new-password');
-    const confirmPasswordInput = document.getElementById('confirm-password');
-    
-    // Элементы контекстного меню
-    const adminContextMenu = document.getElementById('admin-context-menu');
-    const changePasswordMenuBtn = document.getElementById('change-password-btn');
-    
-    // Регистрируем обработчик данных от бота
-    tg.onEvent('web_app_data', handleBotData);
-    
-    // Загружаем товары при старте
-    loadProducts();
-    
-    // Авторизация админа
-    if (adminBtn) {
-        adminBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            
-            if (isAdmin) {
-                // Админ уже авторизован - ничего не делаем, панель всегда видна
-            } else {
-                openModal(adminAuthModal);
-            }
-        });
-    }
-    
-    authSubmit.addEventListener('click', () => {
-        if (adminPassword.value === ADMIN_PASSWORD) {
-            isAdmin = true;
-            adminBtn.style.opacity = '1';
-            adminBtn.style.transform = 'scale(1.2)';
-            setTimeout(() => {
-                adminBtn.style.transform = 'scale(1)';
-            }, 200);
-            // Админ-панель теперь всегда видна для админа
-            adminPanel.style.display = 'flex';
-            closeModal(adminAuthModal);
-            adminPassword.value = '';
+        // Инициализация магазина
+        function initStore() {
             renderProducts();
-            showToast('🎉 Добро пожаловать!', 'success');
-        } else {
-            adminPassword.style.animation = 'shake 0.5s ease-in-out';
-            setTimeout(() => {
-                adminPassword.style.animation = '';
-            }, 500);
-            showToast('❌ Неверный пароль!', 'error');
+            updateStats();
+            
+            // Попытка загрузить данные с GitHub при запуске
+            loadProductsFromGitHub();
         }
-    });
-    
-    logoutBtn.addEventListener('click', () => {
-        isAdmin = false;
-        adminBtn.style.opacity = '0.3';
-        adminPanel.style.display = 'none';
-        renderProducts();
-        showToast('👋 Выход из админки', 'info');
-    });
-    
-    addProductBtn.addEventListener('click', () => {
-        openModal(addProductModal);
-    });
-    
-    // Кнопка обновления товаров (доступна всем)
-    const refreshProductsBtn = document.getElementById('refresh-products-btn');
-    refreshProductsBtn.addEventListener('click', async () => {
-        console.log('🔄 Принудительное обновление товаров...');
-        await loadProducts();
-        showToast('🔄 Обновлено', 'success');
-    });
-    
-    productImage.addEventListener('change', async (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            try {
-                // Показываем индикатор загрузки
-                imagePreview.innerHTML = '<div style="text-align: center; padding: 20px; color: #888;"><div class="loading"></div><br>Сжимаем изображение...</div>';
+        
+        // Рендер товаров
+        function renderProducts() {
+            productsContainer.innerHTML = '';
+            
+            products.forEach(product => {
+                const productCard = document.createElement('div');
+                productCard.className = 'product-card';
+                productCard.dataset.id = product.id;
                 
-                // Сжимаем изображение
-                const compressed = await compressImage(file);
-                
-                // Показываем превью сжатого изображения
-                imagePreview.innerHTML = `
-                    <img src="${compressed.dataUrl}" alt="Preview">
-                    <div style="margin-top: 8px; font-size: 11px; color: #888; text-align: center;">
-                        📸 ${compressed.width}×${compressed.height} | ${Math.round(compressed.compressedSize/1024)}KB
-                        ${compressed.originalSize !== compressed.compressedSize ? `(экономия ${Math.round((1-compressed.compressedSize/compressed.originalSize)*100)}%)` : ''}
+                productCard.innerHTML = `
+                    <div class="product-image" style="background-image: url('${product.image || 'https://via.placeholder.com/300x180/333333/666666?text=PUBG+Account'}')">
+                        ${product.badge ? `<span class="product-badge">${product.badge}</span>` : ''}
+                        ${isAdmin ? `
+                        <div class="admin-controls">
+                            <button class="admin-control-btn delete-btn" title="Удалить">✕</button>
+                            <button class="admin-control-btn edit-btn" title="Редактировать">✎</button>
+                        </div>
+                        ` : ''}
+                    </div>
+                    <div class="product-content">
+                        <h3 class="product-title">${product.title}</h3>
+                        <div class="product-price">${product.price} ₽</div>
+                        <p class="product-description">${product.description}</p>
+                        <button class="buy-btn">Купить сейчас</button>
                     </div>
                 `;
                 
-                // Сохраняем сжатое изображение для использования в форме
-                e.target.compressedImage = compressed.dataUrl;
-                
-            } catch (error) {
-                console.error('Ошибка сжатия изображения:', error);
-                showToast('❌ Ошибка обработки изображения', 'error');
-                imagePreview.innerHTML = '';
-                e.target.value = ''; // Очищаем поле
-            }
-        } else {
-            imagePreview.innerHTML = '';
-            delete e.target.compressedImage;
-        }
-    });
-    
-    productForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        
-        const name = document.getElementById('product-name').value;
-        const price = document.getElementById('product-price').value;
-        const description = document.getElementById('product-description').value;
-        const buyLink = document.getElementById('product-buy-link').value;
-        const imageFile = productImage.files[0];
-        const product = {
-            id: Date.now(),
-            name,
-            price: parseFloat(price),
-            description,
-            buyLink: buyLink || null, // Сохраняем ссылку покупки
-            image: null
-        };
-        
-        // Показываем индикатор загрузки
-        const submitBtn = e.target.querySelector('button[type="submit"]');
-        const originalText = submitBtn.innerHTML;
-        submitBtn.innerHTML = '<span class="loading"></span> Добавляем...';
-        submitBtn.disabled = true;
-        
-        if (imageFile && productImage.compressedImage) {
-            // Используем сжатое изображение
-            product.image = productImage.compressedImage;
-            products.push(product);
-            saveProducts();
+                productsContainer.appendChild(productCard);
+            });
             
-            // Анимация успеха
-            setTimeout(() => {
-                renderProducts();
-                closeModal(addProductModal);
-                productForm.reset();
-                imagePreview.innerHTML = '';
-                delete productImage.compressedImage; // Очищаем сжатое изображение
-                submitBtn.innerHTML = originalText;
-                submitBtn.disabled = false;
-                showToast('✅ Товар успешно добавлен!', 'success');
-            }, 800);
-        } else {
-            setTimeout(() => {
-                products.push(product);
-                saveProducts();
-                renderProducts();
-                closeModal(addProductModal);
-                productForm.reset();
-                submitBtn.innerHTML = originalText;
-                submitBtn.disabled = false;
-                showToast('✅ Товар успешно добавлен!', 'success');
-            }, 800);
-        }
-    });
-    
-    // Закрытие модальных окон
-    document.querySelectorAll('.close').forEach(closeBtn => {
-        closeBtn.addEventListener('click', (e) => {
-            const modal = e.target.closest('.modal');
-            if (modal.id === 'product-detail-modal') {
-                closeProductDetail();
-            } else {
-                closeModal(modal);
+            // Добавляем обработчики для кнопок удаления и редактирования
+            if (isAdmin) {
+                document.querySelectorAll('.delete-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const productId = parseInt(btn.closest('.product-card').dataset.id);
+                        deleteProduct(productId);
+                    });
+                });
+                
+                document.querySelectorAll('.edit-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const productId = parseInt(btn.closest('.product-card').dataset.id);
+                        editProduct(productId);
+                    });
+                });
             }
-        });
-    });
-    
-    document.getElementById('cancel-add').addEventListener('click', () => {
-        closeModal(addProductModal);
-        productForm.reset();
-        imagePreview.innerHTML = '';
-        delete productImage.compressedImage; // Очищаем сжатое изображение
-    });
-    
-    window.addEventListener('click', (e) => {
-        if (e.target.classList.contains('modal')) {
-            if (e.target.id === 'product-detail-modal') {
-                closeProductDetail();
-            } else {
-                closeModal(e.target);
+            
+            // Обработчики для кнопок покупки
+            document.querySelectorAll('.buy-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const productTitle = this.closest('.product-card').querySelector('.product-title').textContent;
+                    const productPrice = this.closest('.product-card').querySelector('.product-price').textContent;
+                    alert(`Вы выбрали товар: ${productTitle}\nЦена: ${productPrice}`);
+                });
+            });
+        }
+        
+        // Добавление товара
+        function addProduct(product) {
+            const newId = products.length > 0 ? Math.max(...products.map(p => p.id)) + 1 : 1;
+            
+            const newProduct = {
+                id: newId,
+                title: product.title,
+                price: parseInt(product.price),
+                description: product.description,
+                badge: product.badge,
+                image: product.image || ''
+            };
+            
+            products.push(newProduct);
+            renderProducts();
+            updateStats();
+            closeModal(addProductModal);
+            addProductForm.reset();
+        }
+        
+        // Удаление товара
+        function deleteProduct(id) {
+            if (confirm('Вы уверены, что хотите удалить этот товар?')) {
+                products = products.filter(product => product.id !== id);
+                renderProducts();
+                updateStats();
             }
         }
-    });
-    
-    // Обработчик формы смены пароля
-    changePasswordForm.addEventListener('submit', (e) => {
-        e.preventDefault();
         
-        const currentPassword = currentPasswordInput.value;
-        const newPassword = newPasswordInput.value;
-        const confirmPassword = confirmPasswordInput.value;
-        
-        // Проверяем текущий пароль
-        if (currentPassword !== ADMIN_PASSWORD) {
-            currentPasswordInput.style.animation = 'shake 0.5s ease-in-out';
-            setTimeout(() => {
-                currentPasswordInput.style.animation = '';
-            }, 500);
-            showToast('❌ Неверный текущий пароль!', 'error');
-            return;
+        // Редактирование товара
+        function editProduct(id) {
+            const product = products.find(p => p.id === id);
+            if (!product) return;
+            
+            // Заполняем форму редактирования
+            document.getElementById('productTitle').value = product.title;
+            document.getElementById('productPrice').value = product.price;
+            document.getElementById('productBadge').value = product.badge || '';
+            document.getElementById('productDescription').value = product.description;
+            document.getElementById('productImage').value = product.image || '';
+            
+            // Временно меняем обработчик формы для редактирования
+            const originalSubmit = addProductForm.onsubmit;
+            
+            addProductForm.onsubmit = function(e) {
+                e.preventDefault();
+                
+                // Обновляем товар
+                product.title = document.getElementById('productTitle').value;
+                product.price = parseInt(document.getElementById('productPrice').value);
+                product.badge = document.getElementById('productBadge').value || '';
+                product.description = document.getElementById('productDescription').value;
+                product.image = document.getElementById('productImage').value || '';
+                
+                renderProducts();
+                updateStats();
+                closeModal(addProductModal);
+                addProductForm.reset();
+                
+                // Возвращаем оригинальный обработчик
+                addProductForm.onsubmit = originalSubmit;
+                
+                return false;
+            };
+            
+            openModal(addProductModal);
+            document.querySelector('#addProductModal .modal-title').textContent = 'Редактировать товар';
+            document.querySelector('#addProductModal .btn').textContent = 'Сохранить изменения';
         }
         
-        // Проверяем совпадение нового пароля
-        if (newPassword !== confirmPassword) {
-            confirmPasswordInput.style.animation = 'shake 0.5s ease-in-out';
-            setTimeout(() => {
-                confirmPasswordInput.style.animation = '';
-            }, 500);
-            showToast('❌ Пароли не совпадают!', 'error');
-            return;
+        // Обновление статистики
+        function updateStats() {
+            totalProductsSpan.textContent = products.length;
+            
+            if (products.length > 0) {
+                const avgPrice = products.reduce((sum, product) => sum + product.price, 0) / products.length;
+                avgPriceSpan.textContent = avgPrice.toFixed(2);
+            } else {
+                avgPriceSpan.textContent = '0';
+            }
         }
         
-        // Проверяем длину нового пароля
-        if (newPassword.length < 4) {
-            newPasswordInput.style.animation = 'shake 0.5s ease-in-out';
-            setTimeout(() => {
-                newPasswordInput.style.animation = '';
-            }, 500);
-            showToast('❌ Пароль должен содержать минимум 4 символа!', 'error');
-            return;
+        // Управление модальными окнами
+        function openModal(modal) {
+            modal.style.display = 'flex';
         }
         
-        // Сохраняем новый пароль глобально
-        ADMIN_PASSWORD = newPassword;
-        localStorage.setItem('admin_password', newPassword);
-        
-        // Сохраняем изменения через бота
-        saveProducts().then(() => {
-            showToast('✅ Пароль изменен глобально для всех пользователей!', 'success');
-        }).catch(() => {
-            showToast('⚠️ Пароль изменен локально, но не удалось синхронизировать', 'warning');
-        });
-        
-        // Очищаем форму и закрываем модальное окно
-        changePasswordForm.reset();
-        closeModal(changePasswordModal);
-    });
-    
-    // Кнопка отмены смены пароля
-    document.getElementById('cancel-password').addEventListener('click', () => {
-        closeModal(changePasswordModal);
-        changePasswordForm.reset();
-    });
-    
-    // Обработчики контекстного меню
-    changePasswordMenuBtn.addEventListener('click', () => {
-        adminContextMenu.classList.add('hidden');
-        openModal(changePasswordModal);
-    });
-    
-    // Закрытие контекстного меню при клике вне его
-    document.addEventListener('click', (e) => {
-        if (adminContextMenu && !adminContextMenu.contains(e.target) && 
-            adminBtn && !adminBtn.contains(e.target)) {
-            adminContextMenu.classList.add('hidden');
+        function closeModal(modal) {
+            modal.style.display = 'none';
         }
-    });
-    
-    // Обработчики полноэкранного просмотра
-    const fullscreenOverlay = document.getElementById('fullscreen-overlay');
-    const fullscreenClose = document.getElementById('fullscreen-close');
-    
-    // Закрытие по кнопке
-    fullscreenClose.addEventListener('click', closeFullscreen);
-    
-    // Закрытие по клику на фон
-    fullscreenOverlay.addEventListener('click', (e) => {
-        if (e.target === fullscreenOverlay) {
-            closeFullscreen();
-        }
-    });
-    
-    // Закрытие по клавише Escape
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && fullscreenOverlay.style.display === 'flex') {
-            closeFullscreen();
-        }
-    });
-});
 
-// Обработка ошибок
-window.addEventListener('error', (event) => {
-    showToast('❌ Произошла ошибка в приложении', 'error', 3000);
-});
+        // Функции для работы с GitHub
+        async function loadProductsFromGitHub() {
+            const { REPO, TOKEN, FILENAME } = GITHUB_CONFIG;
+            
+            if (!REPO || !TOKEN) {
+                showSyncStatus('Настройки GitHub не указаны', false);
+                return;
+            }
+            
+            try {
+                showSyncStatus('Загрузка данных с GitHub...', true);
+                
+                const url = `https://api.github.com/repos/${REPO}/contents/${FILENAME}.json`;
+                
+                const response = await fetch(url, {
+                    headers: {
+                        'Authorization': `token ${TOKEN}`,
+                        'Accept': 'application/vnd.github.v3+json'
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`Ошибка HTTP: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                const content = atob(data.content);
+                const loadedProducts = JSON.parse(content);
+                
+                if (Array.isArray(loadedProducts)) {
+                    products = loadedProducts;
+                    renderProducts();
+                    updateStats();
+                    showSyncStatus('Данные успешно загружены', true);
+                } else {
+                    throw new Error('Неверный формат данных в файле');
+                }
+            } catch (error) {
+                console.error('Ошибка загрузки с GitHub:', error);
+                showSyncStatus(`Ошибка загрузки: ${error.message}`, false);
+            }
+        }
+        
+        async function saveProductsToGitHub() {
+            const { REPO, TOKEN, FILENAME } = GITHUB_CONFIG;
+            
+            if (!REPO || !TOKEN) {
+                showSyncStatus('Настройки GitHub не указаны', false);
+                return;
+            }
+            
+            try {
+                showSyncStatus('Сохранение данных на GitHub...', true);
+                
+                // 1. Проверяем, существует ли файл
+                const fileUrl = `https://api.github.com/repos/${REPO}/contents/${FILENAME}.json`;
+                let sha = null;
+                
+                try {
+                    const checkResponse = await fetch(fileUrl, {
+                        headers: {
+                            'Authorization': `token ${TOKEN}`,
+                            'Accept': 'application/vnd.github.v3+json'
+                        }
+                    });
+                    
+                    if (checkResponse.ok) {
+                        const fileData = await checkResponse.json();
+                        sha = fileData.sha;
+                    }
+                } catch (e) {
+                    // Файл не существует, это нормально
+                }
+                
+                // 2. Подготавливаем данные для отправки
+                const content = JSON.stringify(products, null, 2);
+                const contentBase64 = btoa(unescape(encodeURIComponent(content)));
+                
+                const body = {
+                    message: `Update ${FILENAME}.json`,
+                    content: contentBase64,
+                    sha: sha || undefined
+                };
+                
+                // 3. Отправляем запрос
+                const response = await fetch(fileUrl, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `token ${TOKEN}`,
+                        'Accept': 'application/vnd.github.v3+json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(body)
+                });
+                
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'Неизвестная ошибка');
+                }
+                
+                showSyncStatus('Данные успешно сохранены на GitHub', true);
+            } catch (error) {
+                console.error('Ошибка сохранения на GitHub:', error);
+                showSyncStatus(`Ошибка сохранения: ${error.message}`, false);
+            }
+        }
+        
+        function showSyncStatus(message, isSuccess) {
+            syncStatus.textContent = message;
+            syncStatus.className = 'sync-status';
+            syncStatus.classList.add(isSuccess ? 'sync-success' : 'sync-error');
+            syncStatus.classList.add('show');
+            
+            // Автоматически скрываем сообщение через 5 секунд
+            setTimeout(() => {
+                syncStatus.classList.remove('show');
+            }, 5000);
+        }
+        
+        // Обработчики событий
+        adminButton.addEventListener('click', () => {
+            openModal(adminModal);
+        });
+        
+        closeAdmin.addEventListener('click', () => {
+            closeModal(adminModal);
+        });
+        
+        loginForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const password = document.getElementById('adminPassword').value;
+            
+            if (password === ADMIN_PASSWORD) {
+                isAdmin = true;
+                loginFormContainer.classList.add('hidden');
+                adminPanelContent.classList.remove('hidden');
+                document.getElementById('adminPassword').value = '';
+                renderProducts(); // Перерисовываем товары с кнопками управления
+            } else {
+                alert("Неверный пароль администратора!");
+                document.getElementById('adminPassword').value = '';
+            }
+        });
+        
+        addProductBtn.addEventListener('click', () => {
+            document.querySelector('#addProductModal .modal-title').textContent = 'Добавить товар';
+            document.querySelector('#addProductModal .btn').textContent = 'Добавить товар';
+            addProductForm.reset();
+            openModal(addProductModal);
+        });
+        
+        closeAddProduct.addEventListener('click', () => {
+            closeModal(addProductModal);
+        });
+        
+        addProductForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const newProduct = {
+                title: document.getElementById('productTitle').value,
+                price: document.getElementById('productPrice').value,
+                badge: document.getElementById('productBadge').value,
+                description: document.getElementById('productDescription').value,
+                image: document.getElementById('productImage').value
+            };
+            
+            addProduct(newProduct);
+        });
+        
+        statsBtn.addEventListener('click', () => {
+            updateStats();
+            openModal(statsModal);
+        });
+        
+        closeStats.addEventListener('click', () => {
+            closeModal(statsModal);
+        });
+
+        // Обработчик кнопки синхронизации
+        syncBtn.addEventListener('click', async () => {
+            await saveProductsToGitHub();
+            await loadProductsFromGitHub();
+        });
+        
+        // Закрытие модальных окон при клике вне контента
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    closeModal(modal);
+                }
+            });
+        });
+        
+        // Инициализация магазина при загрузке
+        document.addEventListener('DOMContentLoaded', initStore);
     </script>
 </body>
 </html>
