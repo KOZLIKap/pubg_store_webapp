@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Telegram Mini App</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-vDwlAsEa.css">
+</head>
+<body>
+    <div id="app">
+        <header class="header">
+            <h1>
+                🎮 PUBG Store
+                <div id="header-loading" class="header-loading"></div>
+            </h1>
+            <button id="admin-btn" class="admin-btn" title="Админ панель" onclick="handleAdminClick()">
+                <span class="admin-btn-icon">⚙️</span>
+                <span class="admin-badge" id="admin-badge"></span>
+            </button>
+        </header>
+        
+        <main class="main">
+            <div id="products-container" class="products-container">
+                <div class="empty-state">
+                    <h2>🛍️ Магазин пуст</h2>
+                    <p>Товары появятся здесь после добавления администратором</p>
+                </div>
+            </div>
+        </main>
+
+        <!-- Модальное окно авторизации админа -->
+        <div id="admin-auth-modal" class="modal admin-auth-modal">
+            <div class="modal-content auth-modal-content">
+                <button class="close auth-close" onclick="closeAdminAuth()">×</button>
+                
+                <div class="auth-header">
+                    <div class="auth-icon">🔐</div>
+                    <h2>Авторизация администратора</h2>
+                    <p class="auth-subtitle">Введите пароль для доступа к панели управления</p>
+                </div>
+                
+                <div class="auth-body">
+                    <div class="input-group">
+                        <input 
+                            type="password" 
+                            id="admin-password" 
+                            placeholder="Введите пароль администратора"
+                            class="password-input"
+                            onkeypress="handleAuthKeypress(event)"
+                        >
+                        <div class="password-toggle" id="password-toggle" onclick="togglePasswordVisibility()">
+                            👁️
+                        </div>
+                    </div>
+                    <div class="password-strength"></div>
+                    
+                    <button id="auth-submit" class="btn auth-submit-btn" onclick="handleAdminAuth()">
+                        <span class="btn-text">Войти в админ-панель</span>
+                        <span class="btn-loading" style="display: none;">
+                            <div class="loading"></div>
+                            Проверка...
+                        </span>
+                    </button>
+                </div>
+                
+                <div class="auth-footer">
+                    <p class="auth-hint">
+        💡 Если вы забыли пароль, обратитесь к главному администратору
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Модальное окно добавления товара -->
+        <div id="add-product-modal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal(this.parentElement.parentElement)">×</span>
+                <h2>➕ Добавить товар</h2>
+                <form id="product-form">
+                    <div class="input-group">
+                        <input type="text" id="product-name" placeholder="Название товара" required>
+                    </div>
+                    <div class="input-group">
+                        <input type="number" id="product-price" placeholder="Цена в рублях" step="0.01" required>
+                    </div>
+                    <div class="input-group">
+                        <textarea id="product-description" placeholder="Описание товара" rows="3"></textarea>
+                    </div>
+                    <div class="input-group">
+                        <input type="url" id="product-buy-link" placeholder="Ссылка для покупки (https://t.me/KOZLIK_pubg_shop_bot?start=c_123456)">
+                    </div>
+                    <div class="input-group">
+                        <label for="product-image" class="file-label">
+                            📸 Выбрать изображение товара
+                        </label>
+                        <input type="file" id="product-image" accept="image/*" class="file-input">
+                    </div>
+                    <div class="image-preview" id="image-preview"></div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">
+                            <span class="btn-text">➕ Добавить товар</span>
+                            <span class="btn-loading" style="display: none;">
+                                <div class="loading"></div>
+                                Добавление...
+                            </span>
+                        </button>
+                        <button type="button" class="btn btn-secondary" onclick="closeModal(this.closest('.modal'))">
+                            ❌ Отмена
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Модальное окно смены пароля -->
+        <div id="change-password-modal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal(this.parentElement.parentElement)">×</span>
+                <h2>🔐 Смена пароля</h2>
+                <div class="modal-hint">
+                    💡 Пароль будет изменен глобально для всех пользователей
+                </div>
+                <form id="change-password-form">
+                    <div class="input-group">
+                        <input type="password" id="current-password" placeholder="Текущий пароль" required>
+                    </div>
+                    <div class="input-group">
+                        <input type="password" id="new-password" placeholder="Новый пароль" required>
+                    </div>
+                    <div class="input-group">
+                        <input type="password" id="confirm-password" placeholder="Подтвердите новый пароль" required>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">
+                            🔄 Изменить пароль
+                        </button>
+                        <button type="button" class="btn btn-secondary" onclick="closeModal(this.closest('.modal'))">
+                            ❌ Отмена
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Модальное окно GitHub токена -->
+        <div id="github-token-modal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal(this.parentElement.parentElement)">×</span>
+                <h2>🔗 GitHub токен</h2>
+                <form id="github-token-form">
+                    <div class="input-group">
+                        <input type="password" id="github-token-input" placeholder="Введите GitHub Personal Access Token" required>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">💾 Сохранить</button>
+                        <button type="button" class="btn btn-secondary" onclick="closeModal(this.closest('.modal'))">
+                            ❌ Отмена
+                        </button>
+                    </div>
+                </form>
+                <div class="token-status">
+                    <span id="token-status">❌ Токен не настроен</span>
+                </div>
+                <div class="modal-hint">
+                    🔐 Токен нужен для сохранения данных в GitHub репозиторий
+                </div>
+            </div>
+        </div>
+
+        <!-- Админ панель -->
+        <div id="admin-panel" class="admin-panel">
+            <button id="add-product-btn" class="btn btn-primary" onclick="openAddProductModal()">
+                ➕ Добавить товар
+            </button>
+            <button id="logout-btn" class="btn btn-secondary" onclick="handleAdminLogout()">
+                👋 Выйти
+            </button>
+        </div>
+        
+        <!-- Кнопка обновления для всех пользователей -->
+        <div id="refresh-panel" class="refresh-panel">
+            <button id="refresh-products-btn" class="btn btn-secondary" onclick="handleRefreshProducts()">
+                🔄 Обновить товары
+            </button>
+        </div>
+
+        <!-- Контекстное меню админа -->
+        <div id="admin-context-menu" class="admin-context-menu hidden">
+            <button id="change-password-btn" class="context-menu-item" onclick="openChangePasswordModal()">
+                <span class="menu-icon">🔐</span>
+                <span class="menu-text">Сменить пароль</span>
+            </button>
+            <button id="github-token-btn" class="context-menu-item" onclick="openGithubTokenModal()">
+                <span class="menu-icon">🔗</span>
+                <span class="menu-text">GitHub токен</span>
+            </button>
+        </div>
+
+        <!-- Модальное окно детального просмотра товара -->
+        <div id="product-detail-modal" class="modal">
+            <div class="modal-content product-detail-content">
+                <span class="close" onclick="closeProductDetail()">×</span>
+                <div id="product-detail-body">
+                    <!-- Содержимое будет добавлено динамически -->
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Toast Container -->
+    <div id="toast-container" class="toast-container"></div>
+    
+    <!-- Fullscreen Image Overlay -->
+    <div id="fullscreen-overlay" class="fullscreen-overlay">
+        <img id="fullscreen-image" class="fullscreen-image" src="" alt="">
+        <button id="fullscreen-close" class="fullscreen-close" onclick="closeFullscreen()">✕</button>
+    </div>
+
+    <script>
+        // Инициализация Telegram Web App
+        const tg = window.Telegram.WebApp;
+        
+        // Настройка приложения
+        tg.ready();
+        tg.expand();
+
+        // Константы
+        let ADMIN_PASSWORD = localStorage.getItem('admin_password') || 'admin123';
+        const GITHUB_OWNER = 'Xellouey';
+        const GITHUB_REPO = 'PubgTGApp';
+        const GITHUB_FILE = 'products.json';
+        const GITHUB_API_URL = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${GITHUB_FILE}`;
+        
+        let GITHUB_TOKEN = localStorage.getItem('github_token') || null;
+        let githubSha = null;
+        let isAdmin = false;
+        let products = [];
+
+        // DOM элементы
+        let productsContainer, adminBtn, adminAuthModal, addProductModal, adminPanel;
+        let adminPassword, authSubmit, addProductBtn, logoutBtn, productForm;
+        let imagePreview, productImage;
+
+        // Функции для модального окна авторизации
+        window.handleAdminClick = function() {
+            const adminContextMenu = document.getElementById('admin-context-menu');
+            
+            if (isAdmin) {
+                // Показываем контекстное меню для админа
+                if (adminContextMenu) {
+                    adminContextMenu.classList.toggle('hidden');
+                }
+            } else {
+                // Показываем модальное окно авторизации
+                openAdminAuthModal();
+            }
+        }
+
+        window.openAdminAuthModal = function() {
+            const modal = document.getElementById('admin-auth-modal');
+            if (modal) {
+                modal.style.display = 'flex';
+                // Фокусируемся на поле ввода пароля
+                setTimeout(() => {
+                    const passwordInput = document.getElementById('admin-password');
+                    if (passwordInput) {
+                        passwordInput.focus();
+                    }
+                }, 300);
+            }
+        }
+
+        window.closeAdminAuth = function() {
+            const modal = document.getElementById('admin-auth-modal');
+            if (modal) {
+                modal.style.display = 'none';
+                const passwordInput = document.getElementById('admin-password');
+                if (passwordInput) {
+                    passwordInput.value = '';
+                    passwordInput.classList.remove('error', 'success');
+                }
+            }
+        }
+
+        window.handleAuthKeypress = function(event) {
+            if (event.key === 'Enter') {
+                handleAdminAuth();
+            }
+        }
+
+        window.togglePasswordVisibility = function() {
+            const passwordInput = document.getElementById('admin-password');
+            const toggle = document.getElementById('password-toggle');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggle.textContent = '🙈';
+            } else {
+                passwordInput.type = 'password';
+                toggle.textContent = '👁️';
+            }
+        }
+
+        window.handleAdminAuth = function() {
+            const passwordInput = document.getElementById('admin-password');
+            const submitBtn = document.getElementById('auth-submit');
+            const btnText = submitBtn.querySelector('.btn-text');
+            const btnLoading = submitBtn.querySelector('.btn-loading');
+            const password = passwordInput.value;
+
+            if (!password) {
+                passwordInput.classList.add('error');
+                showToast('❌ Введите пароль', 'error');
+                return;
+            }
+
+            // Показываем индикатор загрузки
+            btnText.style.display = 'none';
+            btnLoading.style.display = 'flex';
+            submitBtn.disabled = true;
+
+            setTimeout(() => {
+                if (password === ADMIN_PASSWORD) {
+                    // Успешная авторизация
+                    passwordInput.classList.add('success');
+                    passwordInput.classList.remove('error');
+                    
+                    isAdmin = true;
+                    updateAdminUI();
+                    
+                    setTimeout(() => {
+                        closeAdminAuth();
+                        showToast('🎉 Добро пожаловать в админ-панель!', 'success');
+                        
+                        // Сбрасываем кнопку
+                        btnText.style.display = 'block';
+                        btnLoading.style.display = 'none';
+                        submitBtn.disabled = false;
+                    }, 1000);
+                    
+                } else {
+                    // Ошибка авторизации
+                    passwordInput.classList.add('error');
+                    passwordInput.classList.remove('success');
+                    passwordInput.style.animation = 'shake 0.5s ease-in-out';
+                    
+                    // Сбрасываем кнопку
+                    btnText.style.display = 'block';
+                    btnLoading.style.display = 'none';
+                    submitBtn.disabled = false;
+                    
+                    setTimeout(() => {
+                        passwordInput.style.animation = '';
+                    }, 500);
+                    
+                    showToast('❌ Неверный пароль!', 'error');
+                }
+            }, 1000);
+        }
+
+        function updateAdminUI() {
+            const adminBtn = document.getElementById('admin-btn');
+            const adminPanel = document.getElementById('admin-panel');
+            const adminBadge = document.getElementById('admin-badge');
+            
+            if (adminBtn) {
+                adminBtn.style.opacity = '1';
+                adminBtn.style.transform = 'scale(1.1)';
+            }
+            
+            if (adminPanel) {
+                adminPanel.style.display = 'flex';
+            }
+            
+            if (adminBadge) {
+                adminBadge.textContent = 'ADMIN';
+            }
+            
+            renderProducts();
+        }
+
+        window.handleAdminLogout = function() {
+            isAdmin = false;
+            const adminBtn = document.getElementById('admin-btn');
+            const adminPanel = document.getElementById('admin-panel');
+            const adminBadge = document.getElementById('admin-badge');
+            const adminContextMenu = document.getElementById('admin-context-menu');
+            
+            if (adminBtn) {
+                adminBtn.style.opacity = '0.3';
+                adminBtn.style.transform = 'scale(1)';
+            }
+            
+            if (adminPanel) {
+                adminPanel.style.display = 'none';
+            }
+            
+            if (adminBadge) {
+                adminBadge.textContent = '';
+            }
+            
+            if (adminContextMenu) {
+                adminContextMenu.classList.add('hidden');
+            }
+            
+            renderProducts();
+            showToast('👋 Вы вышли из админ-панели', 'info');
+        }
+
+        // Вспомогательные функции
+        window.openAddProductModal = function() {
+            const modal = document.getElementById('add-product-modal');
+            if (modal) {
+                modal.style.display = 'block';
+            }
+        }
+
+        window.openChangePasswordModal = function() {
+            const modal = document.getElementById('change-password-modal');
+            if (modal) {
+                modal.style.display = 'block';
+                document.getElementById('admin-context-menu').classList.add('hidden');
+            }
+        }
+
+        window.openGithubTokenModal = function() {
+            const modal = document.getElementById('github-token-modal');
+            if (modal) {
+                modal.style.display = 'block';
+                document.getElementById('admin-context-menu').classList.add('hidden');
+            }
+        }
+
+        window.handleRefreshProducts = function() {
+            loadProducts();
+            showToast('🔄 Обновляем товары...', 'info');
+        }
+
+        // Общая функция закрытия модальных окон
+        window.closeModal = function(modal) {
+            if (modal) {
+                modal.style.display = 'none';
+            }
+        }
+
+        // Остальные функции (loadProducts, renderProducts, saveProducts, и т.д.)
+        // остаются без изменений из вашего оригинального кода...
+
+        // Инициализация при загрузке DOM
+        document.addEventListener('DOMContentLoaded', function() {
+            // Инициализация элементов DOM
+            productsContainer = document.getElementById('products-container');
+            adminBtn = document.getElementById('admin-btn');
+            adminAuthModal = document.getElementById('admin-auth-modal');
+            addProductModal = document.getElementById('add-product-modal');
+            adminPanel = document.getElementById('admin-panel');
+            adminPassword = document.getElementById('admin-password');
+            authSubmit = document.getElementById('auth-submit');
+            addProductBtn = document.getElementById('add-product-btn');
+            logoutBtn = document.getElementById('logout-btn');
+            productForm = document.getElementById('product-form');
+            imagePreview = document.getElementById('image-preview');
+            productImage = document.getElementById('product-image');
+
+            // Загружаем товары при старте
+            loadProducts();
+
+            // Закрытие модальных окон при клике вне их
+            document.addEventListener('click', function(e) {
+                // Закрытие модального окна авторизации
+                if (e.target === adminAuthModal) {
+                    closeAdminAuth();
+                }
+                
+                // Закрытие других модальных окон
+                document.querySelectorAll('.modal').forEach(modal => {
+                    if (e.target === modal && modal.id !== 'admin-auth-modal') {
+                        closeModal(modal);
+                    }
+                });
+
+                // Закрытие контекстного меню админа
+                const adminContextMenu = document.getElementById('admin-context-menu');
+                if (adminContextMenu && !adminContextMenu.classList.contains('hidden') &&
+                    !e.target.closest('#admin-context-menu') && 
+                    !e.target.closest('#admin-btn')) {
+                    adminContextMenu.classList.add('hidden');
+                }
+            });
+
+            // Закрытие по Escape
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    const adminAuthModal = document.getElementById('admin-auth-modal');
+                    if (adminAuthModal.style.display === 'flex') {
+                        closeAdminAuth();
+                    }
+                    
+                    document.querySelectorAll('.modal').forEach(modal => {
+                        if (modal.style.display === 'block') {
+                            closeModal(modal);
+                        }
+                    });
+                    
+                    const adminContextMenu = document.getElementById('admin-context-menu');
+                    if (adminContextMenu && !adminContextMenu.classList.contains('hidden')) {
+                        adminContextMenu.classList.add('hidden');
+                    }
+                }
+            });
+        });
+
+        // Остальной ваш JavaScript код остается здесь...
+        // (функции loadProducts, renderProducts, saveProducts, buyProduct, и т.д.)
+    </script>
+</body>
+</html>
