@@ -1,0 +1,1069 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OksajdShop РаКета - Фарм ресурсы</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --halloween-orange: #FF6B35;
+            --halloween-purple: #6B46C1;
+            --halloween-dark: #1A202C;
+            --halloween-red: #E53E3E;
+            --halloween-green: #38A169;
+            --halloween-blue: #3182CE;
+            --halloween-yellow: #D69E2E;
+            --text-glow: 0 0 10px rgba(255, 107, 53, 0.7);
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--halloween-dark) 0%, #2D3748 100%);
+            color: white;
+            position: relative;
+            min-height: 100vh;
+            padding: 0;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(255, 107, 53, 0.15) 0%, transparent 20%),
+                radial-gradient(circle at 80% 70%, rgba(107, 70, 193, 0.15) 0%, transparent 20%),
+                radial-gradient(circle at 40% 80%, rgba(229, 62, 62, 0.1) 0%, transparent 20%);
+            z-index: -1;
+        }
+
+        .halloween-bats {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .bat {
+            position: absolute;
+            font-size: 24px;
+            color: var(--halloween-dark);
+            opacity: 0.3;
+            animation: fly 15s linear infinite;
+        }
+
+        @keyframes fly {
+            0% {
+                transform: translateX(-50px) translateY(0) rotate(0deg);
+            }
+            100% {
+                transform: translateX(calc(100vw + 50px)) translateY(calc(100vh * var(--random-y))) rotate(360deg);
+            }
+        }
+
+        .app-container {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .content-wrapper {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
+            padding-bottom: 80px;
+        }
+
+        .container {
+            max-width: 420px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+            width: 100%;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+            position: relative;
+            padding: 20px 0;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 120px;
+            background: radial-gradient(circle, var(--halloween-orange) 0%, transparent 70%);
+            border-radius: 50%;
+            filter: blur(20px);
+            opacity: 0.3;
+            z-index: -1;
+        }
+
+        .title {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            background: linear-gradient(to right, var(--halloween-orange), var(--halloween-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: var(--text-glow);
+            position: relative;
+            display: inline-block;
+        }
+
+        .title::after {
+            content: '🎃';
+            position: absolute;
+            right: -40px;
+            top: 0;
+            font-size: 24px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .subtitle {
+            font-size: 16px;
+            opacity: 0.9;
+            margin-bottom: 15px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .oxide-badge {
+            display: inline-block;
+            background: linear-gradient(45deg, var(--halloween-orange), var(--halloween-red));
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-top: 5px;
+            box-shadow: 0 4px 10px rgba(229, 62, 62, 0.3);
+        }
+
+        .catalog-tabs {
+            display: flex;
+            background: rgba(26, 32, 44, 0.8);
+            border-radius: 15px;
+            padding: 8px;
+            margin-bottom: 20px;
+            gap: 8px;
+            flex-wrap: wrap;
+            backdrop-filter: blur(10px);
+        }
+
+        .tab {
+            flex: 1;
+            min-width: 110px;
+            padding: 12px 5px;
+            text-align: center;
+            background: transparent;
+            border: none;
+            color: #CBD5E0;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .tab.active {
+            background: linear-gradient(45deg, var(--halloween-orange), var(--halloween-purple));
+            color: white;
+            box-shadow: 0 4px 15px rgba(255, 107, 53, 0.4);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .price-list {
+            background: rgba(26, 32, 44, 0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 
+                0 10px 30px rgba(0,0,0,0.5),
+                inset 0 1px 0 rgba(255,255,255,0.1);
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 107, 53, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .price-list::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(to right, var(--halloween-orange), var(--halloween-purple));
+        }
+
+        .bundles .price-list::before {
+            background: linear-gradient(to right, var(--halloween-green), var(--halloween-blue));
+        }
+
+        .list-title {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--halloween-orange);
+            text-shadow: var(--text-glow);
+        }
+
+        .bundles .list-title {
+            color: var(--halloween-green);
+        }
+
+        .list-title i {
+            margin-right: 10px;
+            font-size: 24px;
+        }
+
+        .bundle-item {
+            background: rgba(45, 55, 72, 0.5);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 2px solid rgba(56, 161, 105, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .bundle-item:hover {
+            border-color: var(--halloween-green);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(56, 161, 105, 0.3);
+        }
+
+        .bundle-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(to right, var(--halloween-green), var(--halloween-blue));
+        }
+
+        .bundle-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .bundle-name {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--halloween-green);
+            text-shadow: 0 0 10px rgba(56, 161, 105, 0.5);
+        }
+
+        .bundle-price {
+            font-size: 24px;
+            font-weight: 900;
+            color: var(--halloween-green);
+            text-shadow: 0 0 10px rgba(56, 161, 105, 0.7);
+        }
+
+        .bundle-price::before {
+            content: '₽';
+            font-size: 18px;
+            margin-right: 2px;
+            opacity: 0.8;
+        }
+
+        .bundle-content {
+            margin-bottom: 15px;
+        }
+
+        .bundle-items {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .bundle-item-row {
+            display: flex;
+            align-items: center;
+            padding: 8px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px;
+        }
+
+        .bundle-item-icon {
+            width: 30px;
+            height: 30px;
+            background: linear-gradient(135deg, var(--halloween-green), var(--halloween-blue));
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            font-size: 16px;
+        }
+
+        .bundle-item-text {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .bundle-description {
+            font-size: 14px;
+            color: #CBD5E0;
+            text-align: center;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            border-left: 3px solid var(--halloween-green);
+        }
+
+        .bundle-divider {
+            height: 2px;
+            background: linear-gradient(to right, transparent, var(--halloween-green), transparent);
+            margin: 15px 0;
+        }
+
+        .bundle-buy-btn {
+            background: linear-gradient(45deg, var(--halloween-green), var(--halloween-blue));
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(56, 161, 105, 0.4);
+            text-decoration: none;
+            display: block;
+            text-align: center;
+        }
+
+        .bundle-buy-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(56, 161, 105, 0.6);
+        }
+
+        .bundle-buy-btn:active {
+            transform: translateY(0);
+        }
+
+        .resource-buy-btn {
+            background: linear-gradient(45deg, var(--halloween-orange), var(--halloween-red));
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(255, 107, 53, 0.4);
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+            margin-left: 10px;
+        }
+
+        .resource-buy-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(255, 107, 53, 0.6);
+        }
+
+        .component-buy-btn {
+            background: linear-gradient(45deg, var(--halloween-blue), var(--halloween-purple));
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(49, 130, 206, 0.4);
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+            margin-left: 10px;
+        }
+
+        .component-buy-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(49, 130, 206, 0.6);
+        }
+
+        .price-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            transition: all 0.3s ease;
+            border-radius: 12px;
+            margin-bottom: 8px;
+            background: rgba(45, 55, 72, 0.5);
+        }
+
+        .price-item:hover {
+            background: rgba(255, 107, 53, 0.1);
+            transform: translateX(5px);
+            border-left: 3px solid var(--halloween-orange);
+        }
+
+        .price-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        .item-info {
+            flex: 1;
+            display: flex;
+            align-items: center;
+        }
+
+        .item-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--halloween-orange), var(--halloween-purple));
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-size: 18px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+
+        .components .item-icon {
+            background: linear-gradient(135deg, var(--halloween-blue), var(--halloween-purple));
+        }
+
+        .item-name {
+            font-weight: 600;
+            color: #fff;
+            font-size: 16px;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+        }
+
+        .item-details {
+            font-size: 12px;
+            color: #CBD5E0;
+            margin-top: 2px;
+        }
+
+        .item-price {
+            color: var(--halloween-orange);
+            font-weight: 800;
+            font-size: 18px;
+            min-width: 80px;
+            text-align: right;
+            text-shadow: var(--text-glow);
+            position: relative;
+        }
+
+        .components .item-price {
+            color: var(--halloween-blue);
+        }
+
+        .item-price::before {
+            content: '₽';
+            font-size: 14px;
+            margin-right: 2px;
+            opacity: 0.8;
+        }
+
+        .fixed-bottom {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(26, 32, 44, 0.95);
+            backdrop-filter: blur(20px);
+            padding: 15px;
+            border-top: 1px solid rgba(255, 107, 53, 0.3);
+            z-index: 1000;
+        }
+
+        .buy-btn {
+            background: linear-gradient(45deg, var(--halloween-orange), var(--halloween-red));
+            color: white;
+            border: none;
+            padding: 16px 30px;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s ease;
+            box-shadow: 
+                0 6px 20px rgba(255, 107, 53, 0.4),
+                0 0 0 0 rgba(255, 107, 53, 0.5);
+            position: relative;
+            overflow: hidden;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .buy-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 
+                0 8px 25px rgba(255, 107, 53, 0.6),
+                0 0 0 10px rgba(255, 107, 53, 0);
+        }
+
+        .buy-btn:active {
+            transform: translateY(1px);
+        }
+
+        .buy-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: 0.5s;
+        }
+
+        .buy-btn:hover::before {
+            left: 100%;
+        }
+
+        .contact-info {
+            background: rgba(26, 32, 44, 0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            margin-top: 20px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+            border: 1px solid rgba(255, 107, 53, 0.2);
+        }
+
+        .contact-info p {
+            margin: 8px 0;
+            color: #CBD5E0;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .contact-info i {
+            margin-right: 10px;
+            color: var(--halloween-orange);
+            font-size: 16px;
+        }
+
+        .highlight {
+            color: var(--halloween-orange);
+            font-weight: 700;
+            text-shadow: var(--text-glow);
+        }
+
+        .pumpkin {
+            position: absolute;
+            font-size: 40px;
+            bottom: 10px;
+            right: 10px;
+            opacity: 0.2;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { filter: drop-shadow(0 0 5px var(--halloween-orange)); }
+            to { filter: drop-shadow(0 0 15px var(--halloween-orange)); }
+        }
+
+        /* Скрываем скроллбар для WebKit браузеров */
+        .content-wrapper::-webkit-scrollbar {
+            width: 0px;
+            background: transparent;
+        }
+
+        .content-wrapper {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        @media (max-width: 480px) {
+            .content-wrapper {
+                padding: 10px;
+                padding-bottom: 80px;
+            }
+            
+            .price-item {
+                padding: 12px 10px;
+            }
+            
+            .bundle-item {
+                padding: 15px;
+            }
+            
+            .bundle-items {
+                grid-template-columns: 1fr;
+            }
+            
+            .item-name {
+                font-size: 15px;
+            }
+            
+            .item-price {
+                font-size: 16px;
+            }
+            
+            .title {
+                font-size: 24px;
+            }
+            
+            .tab {
+                font-size: 13px;
+                padding: 10px 3px;
+                min-width: 100px;
+            }
+            
+            .fixed-bottom {
+                padding: 12px;
+            }
+        }
+
+        /* Анимация появления элементов */
+        .fade-in {
+            animation: fadeIn 0.8s ease forwards;
+            opacity: 0;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Задержки для анимации появления */
+        .delay-1 { animation-delay: 0.1s; }
+        .delay-2 { animation-delay: 0.2s; }
+        .delay-3 { animation-delay: 0.3s; }
+        .delay-4 { animation-delay: 0.4s; }
+        .delay-5 { animation-delay: 0.5s; }
+    </style>
+</head>
+<body>
+    <div class="halloween-bats" id="batsContainer"></div>
+    
+    <div class="app-container">
+        <div class="content-wrapper">
+            <div class="container">
+                <div class="header fade-in">
+                    <h1 class="title">OksajdShop РаКета</h1>
+                    <p class="subtitle">Фарм ресурсы для Oxide Survival Island</p>
+                    <div class="oxide-badge">Halloween Special 🎃</div>
+                </div>
+
+                <div class="catalog-tabs fade-in delay-1">
+                    <button class="tab active" onclick="switchTab('resources')">📦 Ресурсы</button>
+                    <button class="tab" onclick="switchTab('components')">⚙️ Компоненты</button>
+                    <button class="tab" onclick="switchTab('bundles')">💚 Наборы</button>
+                </div>
+
+                <!-- Вкладка ресурсов -->
+                <div id="resources-tab" class="tab-content active">
+                    <div class="price-list">
+                        <div class="list-title">
+                            <i class="fas fa-cubes"></i>
+                            Основные ресурсы
+                        </div>
+                        <div id="priceList">
+                            <!-- Ресурсы будут загружены через JavaScript -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Вкладка компонентов -->
+                <div id="components-tab" class="tab-content">
+                    <div class="price-list components">
+                        <div class="list-title">
+                            <i class="fas fa-cogs"></i>
+                            Компоненты и крафт
+                        </div>
+                        <div id="componentsList">
+                            <!-- Компоненты будут загружены через JavaScript -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Вкладка наборов -->
+                <div id="bundles-tab" class="tab-content bundles">
+                    <div class="price-list">
+                        <div class="list-title">
+                            <i class="fas fa-gift"></i>
+                            Готовые наборы
+                        </div>
+                        <div id="bundlesList">
+                            <!-- Наборы будут загружены через JavaScript -->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="contact-info fade-in delay-3">
+                    <p><i class="fas fa-bolt"></i> Доставка: <span class="highlight">5-15 минут</span></p>
+                    <p><i class="fas fa-money-bill-wave"></i> Оплата: <span class="highlight">СБП, Карта, Crypto</span></p>
+                    <p><i class="fas fa-headset"></i> Поддержка 24/7</p>
+                    <p><i class="fab fa-telegram"></i> Писать: @OksajdShop_Raketa1 или @OksajdShop_Raketa_bot</p>
+                </div>
+                
+                <div class="pumpkin">🎃</div>
+            </div>
+        </div>
+
+        <!-- Фиксированная кнопка внизу -->
+        <div class="fixed-bottom">
+            <button class="buy-btn" onclick="openTelegram()">
+                <i class="fas fa-ghost"></i> Заказать в Telegram
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Инициализация Telegram Web App в полноэкранном режиме
+        const tg = window.Telegram.WebApp;
+        
+        // Включаем полноэкранный режим
+        tg.expand();
+        tg.enableClosingConfirmation();
+        
+        // Устанавливаем цвет фона
+        tg.setBackgroundColor('#1A202C');
+        
+        // Скрываем верхнюю панель Telegram
+        tg.setHeaderColor('#1A202C');
+        tg.disableVerticalSwipes();
+
+        // Создание летучих мышей
+        function createBats() {
+            const batsContainer = document.getElementById('batsContainer');
+            const batCount = 8;
+            
+            for (let i = 0; i < batCount; i++) {
+                const bat = document.createElement('div');
+                bat.className = 'bat';
+                bat.innerHTML = '🦇';
+                bat.style.setProperty('--random-y', Math.random());
+                bat.style.left = `${Math.random() * 10}%`;
+                bat.style.animationDelay = `${Math.random() * 5}s`;
+                batsContainer.appendChild(bat);
+            }
+        }
+        
+        // Данные прайс-листа ресурсов с новыми ценами
+        const priceList = [
+            { id: 1, name: "1ᴋ 🪵 дерево", price: "20", icon: "🪵" },
+            { id: 2, name: "1ᴋ ⛏ метал", price: "60", icon: "⛏" },
+            { id: 3, name: "1ᴋ 🪨 камень", price: "50", icon: "🪨" },
+            { id: 4, name: "1ᴋ 🪨 сера", price: "80", icon: "🪨" },
+            { id: 5, name: "1ᴋ 💣 порох", price: "120", icon: "💣" },
+            { id: 6, name: "1ᴋ 🔩 скраб", price: "125", icon: "🔩" },
+            { id: 7, name: "500 🔩 скраб", price: "70", icon: "🔩" },
+            { id: 8, name: "100 🫙 топливо", price: "40", icon: "🫙" },
+            { id: 9, name: "500 🫙 топливо", price: "140", icon: "🫙" },
+            { id: 10, name: "1ᴋ 🫙 топливо", price: "190", icon: "🫙" },
+            { id: 11, name: "100 ⛏ мвк", price: "50", icon: "⛏" },
+            { id: 12, name: "1ᴋ 💼 ткань", price: "100", icon: "💼" },
+            { id: 13, name: "1ᴋ ⛏ метал.плав", price: "80", icon: "⛏" },
+            { id: 14, name: "1ᴋ 🧈 жир", price: "150", icon: "🧈" },
+            { id: 15, name: "1к 🪨 сера.плав", price: "90", icon: "🪨" }
+        ];
+
+        // Данные прайс-листа компонентов
+        const componentsList = [
+            { id: 1, name: "Труба", details: "1шт", price: "3", icon: "🔧" },
+            { id: 2, name: "Верёвка", details: "1шт", price: "2", icon: "🪢" },
+            { id: 3, name: "Листвой метал", details: "1шт", price: "4", icon: "📄" },
+            { id: 4, name: "Швейные наборы", details: "1шт", price: "3", icon: "🧵" },
+            { id: 5, name: "Зрывчитое вещество", details: "1шт", price: "6", icon: "💣" },
+            { id: 6, name: "Метолическая пружина", details: "1шт", price: "3", icon: "🌀" },
+            { id: 7, name: "Шестерня", details: "1шт", price: "3", icon: "⚙️" },
+            { id: 8, name: "Корпус винтовки", details: "1шт", price: "5", icon: "🔫" },
+            { id: 9, name: "Корпус смг", details: "1шт", price: "3", icon: "🔫" },
+            { id: 10, name: "Камера", details: "1шт", price: "7", icon: "📷" },
+            { id: 11, name: "Ноутбук", details: "1шт", price: "7", icon: "💻" },
+            { id: 12, name: "Технически мусор", details: "1шт", price: "4", icon: "🗑️" },
+            { id: 13, name: "Пустой газовый балон", details: "1шт", price: "3", icon: "🏺" },
+            { id: 14, name: "Жестеные банки", details: "1шт", price: "1", icon: "🥫" },
+            { id: 15, name: "Дорожные знак", details: "1шт", price: "2", icon: "🛑" }
+        ];
+
+        // Данные наборов с индивидуальными ссылками
+        const bundlesList = [
+            {
+                id: 1,
+                name: "💚 Набор Дом",
+                price: "100",
+                description: "Полный набор для постройки дома",
+                link: "https://t.me/OksajdShop_Raketa_bot?start=c_2546873",
+                items: [
+                    { icon: "🌲", text: "3ᴋ дерева" },
+                    { icon: "🚪", text: "2 железные двери" },
+                    { icon: "🔒", text: "3 замка" },
+                    { icon: "🗄️", text: "Шкаф" },
+                    { icon: "🪨", text: "1ᴋ камня" },
+                    { icon: "🪚", text: "Верстак" },
+                    { icon: "🛏", text: "Спальник" },
+                    { icon: "🔥", text: "2 печки" }
+                ]
+            },
+            {
+                id: 2,
+                name: "⛏ Набор Фармила",
+                price: "45",
+                description: "Инструменты для фарма",
+                link: "https://t.me/OksajdShop_Raketa1",
+                items: [
+                    { icon: "⛏", text: "10 кирок" },
+                    { icon: "🪓", text: "10 топоров" }
+                ]
+            },
+            {
+                id: 3,
+                name: "🎖 Набор ПвП-Шутер",
+                price: "130",
+                description: "Полная экипировка для PvP",
+                link: "https://t.me/OksajdShop_Raketa1",
+                items: [
+                    { icon: "🪖", text: "1 МВК шлем" },
+                    { icon: "🦺", text: "1 МВК нагрудник" },
+                    { icon: "👖", text: "1 МВК штаны" },
+                    { icon: "🥾", text: "1 МВК ботинки" },
+                    { icon: "🔫", text: "1 винтовка" },
+                    { icon: "🔫", text: "30 патронов 5.56" },
+                    { icon: "💉", text: "2 аптечки" }
+                ]
+            },
+            {
+                id: 4,
+                name: "🚀 Набор Рейдер",
+                price: "250",
+                description: "Для штурма баз",
+                link: "https://t.me/OksajdShop_Raketa1",
+                items: [
+                    { icon: "🚀", text: "10 ракет" },
+                    { icon: "🚀", text: "2 РПГ" }
+                ]
+            },
+            {
+                id: 5,
+                name: "🔥 Набор Бомж",
+                price: "70",
+                description: "Идеально для старта!",
+                link: "https://t.me/OksajdShop_Raketa_bot?start=c_2608537",
+                items: [
+                    { icon: "🪵", text: "3 000 дерева" },
+                    { icon: "🪨", text: "1 000 камня" }
+                ]
+            },
+            {
+                id: 6,
+                name: "☄️ Набор Нелегал",
+                price: "120",
+                description: "Уже можно развернуться!",
+                link: "https://t.me/OksajdShop_Raketa_bot?start=c_2608538",
+                items: [
+                    { icon: "🪵", text: "5 000 дерева" },
+                    { icon: "🪨", text: "3 000 камня" }
+                ]
+            },
+            {
+                id: 7,
+                name: "🎃 Набор Богач",
+                price: "200",
+                description: "Почувствуй себя королем ресурсов!",
+                link: "https://t.me/OksajdShop_Raketa_bot?start=c_2608544",
+                items: [
+                    { icon: "🪵", text: "10 000 дерева" },
+                    { icon: "🪨", text: "5 000 камня" }
+                ]
+            },
+            {
+                id: 8,
+                name: "🤑 Набор Бешеный",
+                price: "400",
+                description: "Для тех, кто готов строить империю!",
+                link: "https://t.me/OksajdShop_Raketa_bot?start=c_2608546",
+                items: [
+                    { icon: "🪵", text: "30 000 дерева" },
+                    { icon: "👑", text: "Основа для великой базы" }
+                ]
+            }
+        ];
+
+        // Заполнение прайс-листа ресурсов с кнопками покупки
+        function populatePriceList() {
+            const priceListContainer = document.getElementById('priceList');
+            priceList.forEach((item, index) => {
+                const priceItem = document.createElement('div');
+                priceItem.className = `price-item fade-in delay-${(index % 5) + 1}`;
+                priceItem.innerHTML = `
+                    <div class="item-info">
+                        <div class="item-icon">${item.icon}</div>
+                        <div>
+                            <div class="item-name">${item.name}</div>
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: center;">
+                        <div class="item-price">${item.price}</div>
+                        <a href="https://t.me/OksajdShop_Raketa_bot?start=c_2546831" class="resource-buy-btn" target="_blank">
+                            <i class="fab fa-telegram"></i> Купить
+                        </a>
+                    </div>
+                `;
+                priceListContainer.appendChild(priceItem);
+            });
+        }
+
+        // Заполнение прайс-листа компонентов с кнопками покупки
+        function populateComponentsList() {
+            const componentsContainer = document.getElementById('componentsList');
+            componentsList.forEach((item, index) => {
+                const componentItem = document.createElement('div');
+                componentItem.className = `price-item fade-in delay-${(index % 5) + 1}`;
+                componentItem.innerHTML = `
+                    <div class="item-info">
+                        <div class="item-icon">${item.icon}</div>
+                        <div>
+                            <div class="item-name">${item.name}</div>
+                            <div class="item-details">${item.details}</div>
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: center;">
+                        <div class="item-price">${item.price}</div>
+                        <a href="https://t.me/OksajdShop_Raketa1" class="component-buy-btn" target="_blank">
+                            <i class="fab fa-telegram"></i> Купить
+                        </a>
+                    </div>
+                `;
+                componentsContainer.appendChild(componentItem);
+            });
+        }
+
+        // Заполнение списка наборов с индивидуальными ссылками
+        function populateBundlesList() {
+            const bundlesContainer = document.getElementById('bundlesList');
+            bundlesList.forEach((bundle, index) => {
+                const bundleItem = document.createElement('div');
+                bundleItem.className = `bundle-item fade-in delay-${(index % 3) + 1}`;
+                
+                let itemsHTML = '';
+                bundle.items.forEach(item => {
+                    itemsHTML += `
+                        <div class="bundle-item-row">
+                            <div class="bundle-item-icon">${item.icon}</div>
+                            <div class="bundle-item-text">${item.text}</div>
+                        </div>
+                    `;
+                });
+                
+                bundleItem.innerHTML = `
+                    <div class="bundle-header">
+                        <div class="bundle-name">${bundle.name}</div>
+                        <div class="bundle-price">${bundle.price}</div>
+                    </div>
+                    <div class="bundle-description">${bundle.description}</div>
+                    <div class="bundle-items">
+                        ${itemsHTML}
+                    </div>
+                    <div class="bundle-divider"></div>
+                    <a href="${bundle.link}" class="bundle-buy-btn" target="_blank">
+                        <i class="fab fa-telegram"></i> Купить набор
+                    </a>
+                `;
+                bundlesContainer.appendChild(bundleItem);
+            });
+        }
+
+        // Переключение вкладок
+        function switchTab(tabName) {
+            // Убираем активный класс со всех вкладок и контента
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // Активируем выбранную вкладку
+            document.querySelector(`.tab[onclick="switchTab('${tabName}')"]`).classList.add('active');
+            document.getElementById(`${tabName}-tab`).classList.add('active');
+        }
+
+        // Функция для открытия Telegram
+        function openTelegram() {
+            const telegramUrl = `https://t.me/OksajdShop_Raketa1`;
+            
+            // Пытаемся открыть через Telegram, если приложение запущено в нем
+            if (tg.platform !== 'unknown') {
+                tg.openTelegramLink(telegramUrl);
+            } else {
+                // Если открыто в браузере, открываем в новой вкладке
+                window.open(telegramUrl, '_blank');
+            }
+        }
+
+        // Инициализация при загрузке
+        document.addEventListener('DOMContentLoaded', function() {
+            createBats();
+            populatePriceList();
+            populateComponentsList();
+            populateBundlesList();
+            tg.ready();
+            
+            // Прокручиваем к началу при загрузке
+            setTimeout(() => {
+                document.querySelector('.content-wrapper').scrollTop = 0;
+            }, 100);
+        });
+    </script>
+</body>
+  </html>
